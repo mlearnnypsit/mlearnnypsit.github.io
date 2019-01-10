@@ -1,0 +1,573 @@
+html, body {
+   margin: 0;
+}
+
+body {
+   min-height: 100%;
+   font-size: 1.4em;
+}
+
+p, li, div {
+   word-break: break-all;
+}
+
+hr {
+   margin: 2px 0 !important;
+}
+
+.bold {
+   font-weight: bold;
+}
+
+.em {
+   font-style: italic;
+}
+
+.sub {
+   vertical-align: sub;
+   font-size: smaller;
+}
+
+.underline {
+   text-decoration: underline;
+}
+
+#masterDiv {
+   overflow: hidden;
+   height: 100vh;
+}
+
+#startupDiv {
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   z-index: 1;
+}
+
+#startupDiv>div {
+   border-radius: 1px;
+   position: absolute;
+   top: 25%;
+   left: 10%;
+   width: 80%;
+   height: 50%;
+}
+
+#startupDivPage1 {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   height: 100%;
+   flex-wrap: wrap;
+}
+
+.startupImg {
+   width: 150px;
+   height: 150px;
+   font-size: 90px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+#startupDivPage2 {
+   display: flex;
+   flex-direction: column;
+   height: 100%;
+}
+
+#startupLeftDiv, #startupRightDiv {
+   flex-basis: 50%;
+   cursor: pointer;
+   padding: 30px;
+   opacity: 0.8;
+   filter: alpha(opacity=80);
+   /* For IE8 and earlier */
+   height: 80%;
+}
+
+#startupLeftDiv:hover, #startupRightDiv:hover {
+   opacity: 1;
+   filter: alpha(opacity=100);
+   /* For IE8 and earlier */
+}
+
+#startupLeftDiv {
+   padding-right: 15px;
+}
+
+#startupRightDiv {
+   padding-left: 15px;
+}
+
+#startupLeftDiv>div, #startupRightDiv>div {
+   border: 1px solid black;
+   border-radius: 5px;
+   padding: 24px;
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   height: 100%;
+   background-color: ghostwhite;
+}
+
+#excelPopupCheckboxDiv {
+   text-align: right;
+}
+
+.startupImg.rounded {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+#startupDivPage2>div:first-child {
+   display: flex;
+   flex-direction: column;
+   flex-grow: 1;
+   padding: 0 30px 30px 30px;
+}
+
+#startupDivPage2P {
+   margin-top: 30px;
+}
+
+#page2Error {
+   display: none;
+   margin-bottom: 0;
+}
+
+#page2Error>p {
+   display: inline;
+   flex-grow: 1;
+   float: left;
+}
+
+#linkBoxAlertError {
+   margin-bottom: 0;
+   height: 46px;
+}
+
+#linkBoxAlertError>p {
+   display: inline;
+   float: left;
+}
+
+#importTextarea {
+   flex-grow: 1;
+   resize: none;
+}
+
+/* dont know how
+#importTextarea::after {
+	display: block;
+	content: "Drop the file";
+}
+*/
+#startupDivPage2>div:first-child>div>button {
+   float: right;
+   width: 40%;
+}
+
+#startupDivPage2>div:first-child>div>button:first-child {
+   margin-left: 5%;
+}
+
+#carousel {
+   height: 100%;
+}
+
+.carousel-inner {
+   height: 100%;
+}
+
+.carousel-item {
+   height: 100%;
+}
+
+.carousel-control-prev {
+   background-color: rgba(122, 122, 122, 0.8);
+   width: 25px !important;
+   vertical-align: middle;
+}
+
+.carousel-control-prev-icon {
+   display: flex;
+   align-items: center;
+}
+
+#startupDivPage3 {
+   padding: 30px;
+   height: 100%;
+}
+
+#startupDivPage3>div {
+   display: flex;
+   flex-direction: column;
+   height: 100%;
+}
+
+#startupDivPage3>div>.clearfix {
+   text-align: right;
+}
+
+#importPage3Preview {
+   overflow-y: auto;
+   border: 1px solid black;
+}
+
+#page1, #page2 {
+   border-bottom-width: 1px;
+   border-style: dashed;
+   border-color: grey;
+}
+
+.lesson {
+   display: flex;
+   flex-direction: column;
+   margin-bottom: 20px;
+}
+
+.lessonHeader {
+   background-color: lightskyblue;
+   padding: 10px;
+}
+
+.lecPracDiv {
+   background-color: #b0c4de;
+   flex-basis: 10%;
+   flex-grow: 1;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+.lecPracDiv>p {
+   margin: 12px;
+   word-break: break-word;
+}
+
+.lecPracHeader {
+   display: flex;
+   flex-wrap: wrap;
+   margin-top: 5px;
+}
+
+.lessonPlanContent {
+   flex-grow: 1;
+   padding: 10px;
+   height: auto;
+   flex-basis: 80%;
+}
+
+.section {
+   position: relative;
+   border: 1px solid black;
+   margin: 5px 10px;
+   border-radius: 2px;
+   background-color: white;
+}
+
+.section.mainSection {
+   margin: 0 24px 24px 24px;
+}
+
+#page1>div:first-child, .lessonTitle {
+   padding: 24px;
+}
+
+#addLessonSection, #page1>div:last-of-type {
+   margin: 0 24px 24px 24px;
+}
+
+#page1>button {
+   margin-left: 24px;
+}
+
+.flex {
+   display: flex;
+   flex-wrap: wrap;
+}
+
+.page1Content {
+   flex-grow: 1;
+}
+
+.contentDivDivDraggableDiv {
+   flex-basis: 15px;
+   min-width: 15px;
+   margin: 20px 0;
+   border-radius: 0 10px 10px 0;
+   cursor: move;
+}
+
+.contentDivDiv {
+   position: relative;
+   display: flex;
+}
+
+.contentDivDivRight {
+   position: relative;
+   display: flex;
+   flex-wrap: wrap;
+   flex-grow: 1;
+}
+
+.leftDiv {
+   padding: 10px 20px;
+}
+
+.rightDiv {
+   flex-grow: 1;
+   padding: 10px 20px;
+}
+
+.close.closeImg {
+   background-color: black;
+   color: white;
+   height: 26px;
+   width: 25px;
+   border-radius: 15px;
+}
+
+.close.closeImg>span {
+   position: relative;
+   bottom: 3px;
+}
+
+.close:not(:disabled):not(.disabled):focus, .close:not(:disabled):not(.disabled):hover {
+   color: white !important;
+}
+
+.closeImg {
+   position: absolute;
+   top: 0;
+   right: 0;
+}
+
+.addLessonContent {
+   display: flex;
+   height: 50px;
+   background-color: lightsteelblue;
+   align-items: center;
+   justify-content: center;
+   cursor: pointer;
+}
+
+.mainSection {
+   margin: 10px 0;
+}
+
+textarea {
+   width: 100%;
+   resize: vertical;
+}
+
+#masterDiv {
+   display: flex;
+   flex-wrap: wrap;
+}
+
+#page1 {
+   flex-basis: 30%;
+   flex-grow: 1;
+   padding-bottom: 24px;
+}
+
+#page1>button:last-child {
+   margin-left: 5px;
+}
+
+#page2 {
+   flex-basis: 50%;
+   padding: 24px;
+   flex-grow: 1;
+}
+
+#popup .modal-body textarea {
+   resize: none;
+   height: 10vh;
+}
+
+#popup .modal-footer {
+   flex-wrap: wrap;
+}
+
+.generateHTMLRedText {
+   display: none;
+   color: red;
+   font-weight: 500;
+   flex-basis: 100%;
+   text-align: right;
+   margin-bottom: 0;
+}
+
+#rightClickMenu {
+   position: fixed;
+   display: none;
+   background-color: white;
+   border: 1px solid grey;
+   box-shadow: 3px 1px 1px black;
+}
+
+#rightClickMenu>ul {
+   list-style-type: none;
+   padding: 0px;
+   margin: 0;
+}
+
+#rightClickMenu>ul li {
+   padding: 10px 20px;
+}
+
+#rightClickMenu>ul li:hover {
+   background-color: rgba(122, 122, 122, 0.5);
+   cursor: pointer;
+}
+
+/*
+#linkBoxDiv {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	display: none;
+	background-color: rgba(122,122,122,0.5);
+}
+
+#linkBox {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	position: absolute;
+	width: 25%;
+	height: 30%;
+	background-color: white;
+	border: 1px solid grey;
+	padding: 20px;
+}
+
+#linkBox > * {
+	width: 100%;
+}
+
+#linkBox > p {
+	margin-top: 0;
+}
+
+#linkBox > div {
+	text-align: right;
+}
+*/
+.dropdown-item {
+   cursor: pointer;
+}
+
+.active.dropdown-item {
+   background-color: rgba(0, 123, 255, 0.8) !important;
+   color: rgb(255, 255, 255) !important;
+}
+
+.active.dropdown-item:hover {
+   background-color: rgba(0, 123, 255, 1) !important;
+}
+
+.dropdown-item:active {
+   color: rgb(255, 255, 255) !important;
+}
+
+.inputDiv {
+   overflow: auto;
+   height: auto !important;
+   max-height: 150px;
+}
+
+.dropdown-itemed {
+   display: block;
+}
+
+.showAllInput {
+   display: none;
+}
+
+#remappingDiv > .card-body {
+   display: flex;
+   flex-direction: column;
+}
+
+#headingOne {
+   cursor: pointer;
+}
+
+.mb-0 > i {
+   margin-right: 10px;
+}
+
+@media only screen and (min-width:0px) and (max-width:736px) {
+   #startupLeftDiv, #startupRightDiv {
+      padding: 12px;
+      flex-basis: 100%;
+   }
+
+   #startupLeftDiv {
+      padding-bottom: 0 !important;
+   }
+
+   #startupRightDiv {
+      padding-top: 0 !important;
+   }
+
+   #startupLeftDiv img, #startupRightDiv img {
+      object-fit: scale-down;
+      margin-left: 12px;
+   }
+
+   #startupLeftDiv>div, #startupRightDiv>div {
+      flex-direction: row-reverse;
+   }
+
+   #startupLeftDiv, #startupRightDiv {
+      padding: 12px;
+      flex-basis: 100%;
+      height: 50%;
+   }
+
+   #masterDiv {
+      font-size: 1em;
+   }
+
+   .lecPracDiv {
+      flex-basis: 100%;
+      margin-bottom: 5px;
+   }
+
+   .icaDiv {
+      flex-basis: 100%;
+      margin-bottom: 5px;
+   }
+
+   .lecPracHeader {
+      margin: 0;
+   }
+
+   #page1 {
+      flex-basis: 100%;
+      flex-grow: 1;
+   }
+
+   #page2 {
+      flex-basis: 100%;
+      flex-grow: 1;
+   }
+}
+
+@media only screen and (min-width:737px) and (max-width:1024px) {
+   body {
+      font-size: 1.4em;
+   }
+}
