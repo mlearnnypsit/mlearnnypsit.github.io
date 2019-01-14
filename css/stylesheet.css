@@ -249,6 +249,7 @@ hr {
 .lecPracDiv>p {
    margin: 12px;
    word-break: break-word;
+   text-aling: center;
 }
 
 .lecPracHeader {
@@ -523,7 +524,7 @@ textarea {
    margin: auto;
 }
 
-#excelPage2, #excelPage3, .modal-footer > button:nth-child(2) {
+#excelPage2, #excelPage3, #excelBox > .modal-content > .modal-footer > button:nth-child(2) {
    display: none;
 }
 

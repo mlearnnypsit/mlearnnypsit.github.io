@@ -102,16 +102,16 @@ p {
    font-size: 3vw;
 }
 
-#page1BottomAccordionTitleDiv {
+.page1Title {
    padding: 24px;
-   background-color: rgba(55,55,55,0.2);
+   background-color: rgba(255, 245, 157, .5);
 }
 
-#page1BottomDivTitle {
+#page1BottomDivTitle, #page1BottomDivWhyTitle {
    font-size: 6vw;
 }
 
-#page1BottomDivSubtitle {
+#page1BottomDivSubtitle, #page1BottomDivWhySubtitle {
    font-size: 4vw;
 }
 
@@ -130,20 +130,21 @@ p {
    flex-grow: 1;
 }
 
-#page1BottomAccordionTitle, #page1BottomCardTitle {
+#page1BottomAccordionTitle, #page1BottomCardTitle, #page1BottomWhyTitle {
    padding: 10px;
 }
 
-#page1BottomAccordionDetails, #page1BottomCardDetails {
+#page1BottomAccordionDetails, #page1BottomCardDetails, #page1BottomWhyDetails {
    padding: 10px;
-   text-align: left;
+   text-align: center;
 }
 
 /* For animation */
 #page1TopDivTitle, #page1TopDivButtonDiv, #page1BottomDivTitle,
 #page1BottomDivSubtitle, #page1BottomAccordionTitle, #page1BottomAccordionDetails,
 #page1BottomAccordionExample, #page1BottomCardTitle,  #page1BottomCardDetails,
-#page1BottomCardDetailsImage {
+#page1BottomCardDetailsImage, #page1BottomDivWhyTitle, #page1BottomWhyTitle,
+#page1BottomWhyDetails {
    opacity: 0;
 }
 
@@ -205,43 +206,41 @@ p {
 #page2BottomDiv {
    display: flex;
    flex-grow: 1;
+   flex-direction: column;
 }
 
 #page2BottomLeftDiv {
    display: flex;
+   flex-direction: column;
+   min-height: 50px;
 }
 
 #page2BottomLeftDivLeftDiv {
-   width: 0;
+   height: 0;
 }
 
 #page2BottomLeftDivRightDiv {
-   flex-basis: 50px;
-   min-width: 50px;
+   min-height: 50px;
    display: flex;
-   flex-direction: column;
    background-color: pink;
 }
 
-#page2BottomLeftDivRightDiv > :first-child {
-   margin: 0 0 5px 0;
-}
-
-#page2BottomLeftDivRightDiv > :last-child {
-   margin: 0;
-}
-
 #page2BottomLeftDivRightDiv > div {
-   margin: 5px 0;
    flex-basis: 50px;
    display: flex;
    align-items: center;
    justify-content: center;
 }
 
-#page2BottomLeftDivRightDiv > div > i {
-   font-size: 30px;
-   cursor: pointer;
+#page2BottomLeftDivRightDiv > div > * {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   border-radius: 2px;
+   width: 100%;
+   height: 100%;
+   font-size: 1.5rem;
+   color: white;
 }
 
 #page2BottomLeftDivRightDiv > .clearSpace {
@@ -257,10 +256,49 @@ p {
 
 #page2BottomRightDiv {
    flex-grow: 1;
+   overflow-y: auto;
 }
 
 #componentsDiv {
    padding: 20px;
+}
+
+.accordionDiv {
+   display: flex;
+   margin-bottom: .75rem;
+   background-color: rgba(0, 0, 0, .03);
+   border-radius: 5px;
+}
+
+.accordionDraggableDiv {
+   flex-basis: 20px;
+   border-radius: 5px 0 0 5px;
+   cursor: move;
+}
+
+#cardIndicatorDiv {
+   display: flex;
+   margin-top: 10px;
+   flex-direction: column;
+}
+
+#cardIndicatorDiv > :first-child{
+   order: 1;
+}
+
+#cardIndicatorDiv > :last-child{
+   order: 2;
+}
+
+#cardIndicatorDiv > * {
+   margin: 10px;
+}
+
+#cardIndexIndicator {
+   font-size: 8vw;
+   flex-grow: 1;
+   text-align: center;
+   font-weight: 900;
 }
 
 #page3 {
@@ -271,6 +309,14 @@ p {
    width: 100%;
 }
 
+[contentEditable='true'] {
+   cursor: auto;
+}
+
+.accordionDiv > .accordion {
+   margin: 0;
+}
+
 .accordion {
    width: 100%;
    text-align: center;
@@ -279,10 +325,11 @@ p {
    margin-bottom: 24px;
    color: inherit;
    background-color: rgba(0, 0, 0, .03);
-	border-radius: 5px;
+   border-bottom: 1px solid rgba(0, 0, 0, .125);
+   border-radius: 5px;
 }
 
-.accordion>p:first-child {
+.accordion>:first-child {
    margin: 0;
    padding: 16px 0;
 }
@@ -290,22 +337,22 @@ p {
 .accordion .accordionContent {
    border-top-style: solid;
    border-top-width: 0;
-	background-color: white;
-	border-radius: 2px;
-   cursor: auto;
+   background-color: white;
+   border-radius: 2px;
    overflow: auto;
-   height: 0;
-   transition-property: height, border-top-width;
+   max-height: 0;
+   transition-property: max-height, border-top-width;
    transition-duration: 0.5s;
    transition-timing-function: ease-in-out;
 }
 
 .expand.accordionContent {
-   height: 200px !important;
+   max-height: 5000px !important;
    border-top-width: 1px !important;
-	border-top-color: rgba(133, 133, 133, .75);
-	margin-bottom: 8px;
+   border-top-color: rgba(133, 133, 133, .75);
+   margin-bottom: 8px;
 }
+
 
 .cardAnimationDiv {
 	position: relative;
@@ -388,14 +435,65 @@ p {
    #page1TopDivTitle {
       font-size: 160px;
    }
-   #page1BottomDivTitle {
+   #page1BottomDivTitle, #page1BottomDivWhyTitle {
       font-size: 56px;
    }
    #page1BottomDivSubtitle {
       font-size: 40px;
    }
 
+   #page1BottomAccordionDetails, #page1BottomCardDetails, #page1BottomWhyDetails {
+      text-align: left;
+   }
+
    #page1BottomDiv {
       font-size: 28px;
+   }
+
+   #page2BottomDiv {
+      flex-direction: row;
+   }
+
+   #page2BottomLeftDiv {
+      flex-direction: row;
+   }
+
+   #page2BottomLeftDivLeftDiv {
+      width: unset;
+      height: 0;
+   }
+
+   #page2BottomLeftDivRightDiv {
+      flex-direction: column;
+      min-width: 50px;
+      min-height: unset;
+   }
+
+   #page2BottomLeftDivRightDiv > :first-child {
+      margin: 0 0 5px 0;
+   }
+
+   #page2BottomLeftDivRightDiv > :last-child {
+      margin: 0;
+   }
+
+   #page2BottomLeftDivRightDiv > div {
+      margin: 5px 0;
+   }
+
+   #cardIndicatorDiv {
+      flex-direction: row;
+   }
+
+   #cardIndicatorDiv > :first-child{
+      order: 0;
+   }
+
+   #cardIndicatorDiv > :last-child{
+      order: 0;
+   }
+
+   #cardIndexIndicator {
+      font-size: 24px;
    }
 }
