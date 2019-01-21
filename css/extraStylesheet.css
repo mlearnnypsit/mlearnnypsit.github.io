@@ -1,11 +1,13 @@
 @font-face {
     font-family: "RobotoB";
     src: url('RobotoFont/Roboto-Bold.ttf') format("truetype");
+    font-display: block;
 }
 
 @font-face {
     font-family: "RobotoR";
     src: url('RobotoFont/Roboto-Regular.ttf') format("truetype");
+    font-display: block;
 }
 
 html, body {
@@ -63,7 +65,7 @@ p {
 }
 
 #page1TopDivTitle {
-   font-size: 20vw;
+   font-size: 15vw;
    font-family: 'RobotoB', sans-serif;
    width: 100%;
    text-shadow: 0 0.032em 0 #b0b0b0, 0px 0.15em 0.11em rgba(0,0,0,0.15), 0px 0.25em 0.021em rgba(0,0,0,0.1), 0px 0.32em 0.32em rgba(0,0,0,0.1);
@@ -75,7 +77,7 @@ p {
    text-align: center;
 }
 
-#page1TopDivButtonDiv > button {
+#page1TopDivButtonDiv button {
    border: 2px solid white;
    background-color: #343a40;
    color: white;
@@ -89,9 +91,14 @@ p {
    opacity: 0.9;
 }
 
-#page1TopDivButtonDiv > button:hover {
+#page1TopDivButtonDiv button:hover {
    opacity: 1;
    box-shadow: -0.45rem 0.55rem 2px #888888;
+}
+
+#page1TopDivButtonDiv > div > button {
+   width: 60%;
+   max-width: 540px;
 }
 
 #page1BottomDiv {
@@ -143,7 +150,7 @@ p {
 #page1TopDivTitle, #page1TopDivButtonDiv, #page1BottomDivTitle,
 #page1BottomDivSubtitle, #page1BottomAccordionTitle, #page1BottomAccordionDetails,
 #page1BottomAccordionExample, #page1BottomCardTitle,  #page1BottomCardDetails,
-#page1BottomCardDetailsImage, #page1BottomDivWhyTitle, #page1BottomWhyTitle,
+#page1BottomCardDetailsExample, #page1BottomDivWhyTitle, #page1BottomWhyTitle,
 #page1BottomWhyDetails {
    opacity: 0;
 }
@@ -165,6 +172,9 @@ p {
    flex-basis: 50px;
    min-height: 50px;
    display: flex;
+   position: fixed;
+   z-index: 2;
+   width: 100%;
 }
 
 #page2TopBarDivBackbutton {
@@ -205,18 +215,73 @@ p {
 
 #page2BottomDiv {
    display: flex;
-   flex-grow: 1;
    flex-direction: column;
+   height: calc(100% - 50px);
+   margin-top: 50px;
 }
 
 #page2BottomLeftDiv {
-   display: flex;
-   flex-direction: column;
-   min-height: 50px;
 }
 
 #page2BottomLeftDivLeftDiv {
    height: 0;
+   overflow: hidden;
+   background-color: rgba(255, 108, 123, 0.6);
+   transition-property: height;
+   transition-duration: 1s;
+   transition-timing-function: ease-in-out;
+}
+
+#page2BottomLeftDivLeftDiv.expand {
+   height: 200px;
+}
+
+#templateMainDiv {
+   width: 100%;
+   height: 100%;
+   display: flex;
+   overflow: hidden;
+   overflow-x: auto;
+}
+
+.templateDivs {
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   padding: 24px;
+}
+
+.templateDivs > * {
+   cursor: pointer;
+}
+
+.templateDivs > img {
+   width: 200px;
+   padding: .25rem;
+   background-color: #fff;
+   border: 1px solid #dee2e6;
+   border-radius: .25rem;
+}
+
+#hiddenCodeTextarea {
+   flex-direction: column;
+   height: 100%;
+   background-color: rgb(42, 42, 46);
+   color: white;
+   font-family: 'RobotoR';
+   overflow-y: auto;
+}
+
+#hiddenCodeTextarea > p {
+   padding: 12px;
+   border-bottom: 2px solid rgb(38, 38, 42);
+   text-align: center;
+}
+
+#hiddenCodeTextarea > div {
+   z-index: 1;
+   flex-grow: 1;
 }
 
 #page2BottomLeftDivRightDiv {
@@ -313,87 +378,398 @@ p {
    cursor: auto;
 }
 
-.accordionDiv > .accordion {
-   margin: 0;
+.accordion {
+   background-color: rgba(233, 207, 249, 0.5);
 }
 
-.accordion {
+.accordionAlternate {
+   background-color: rgba(0, 0, 0, .03);
+}
+
+.accordion, .accordionAlternate {
    width: 100%;
-   text-align: center;
    cursor: pointer;
    padding: 0 .75rem;
-   margin-bottom: 24px;
    color: inherit;
-   background-color: rgba(0, 0, 0, .03);
    border-bottom: 1px solid rgba(0, 0, 0, .125);
    border-radius: 5px;
 }
 
-.accordion>:first-child {
+.accordion > div:first-child, .accordionAlternate > div:first-child {
+   position: relative;
+   width: 100%;
+   cursor: pointer;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+.accordion > div:first-child > :first-child, .accordionAlternate > div:first-child > :first-child {
    margin: 0;
    padding: 16px 0;
 }
 
-.accordion .accordionContent {
+.accordionAlternate > div:first-child::after {
+   content: '+';
+   position: absolute;
+   top: calc(50% - 18px);
+   right: 24px;
+   font-size: 24px;
+   font-weight: 500;
+}
+
+.accordion .accordionContent, .accordionAlternate .accordionAlternateContent {
    border-top-style: solid;
    border-top-width: 0;
    background-color: white;
    border-radius: 2px;
    overflow: auto;
    max-height: 0;
-   transition-property: max-height, border-top-width;
+   padding: 0;
+   cursor: auto;
+   transition-property: padding, max-height, border-top-width;
    transition-duration: 0.5s;
    transition-timing-function: ease-in-out;
 }
 
-.expand.accordionContent {
-   max-height: 5000px !important;
+.expand.accordion > .accordionContent, .expand.accordionAlternate > .accordionAlternateContent {
+   max-height: 10000px !important;
    border-top-width: 1px !important;
    border-top-color: rgba(133, 133, 133, .75);
    margin-bottom: 8px;
+   padding: 24px;
 }
 
+.expand.accordionAlternate > div:first-child::after {
+   content: '_';
+   top: calc(50% - 26px);
+   font-size: 22px;
+}
 
 .cardAnimationDiv {
-	position: relative;
+	display: flex;
 	width: 100%;
 	height: 400px;
-	border: 1px red solid;
-	background-color: black;
+}
+
+.cardAnimationDivLeftButton, .cardAnimationDivRightButton {
+	min-width: 50px;
+	flex-basis: 5%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	margin: 0 10px;
+}
+
+.cardSwipeDivDiv {
+	position: relative;
+	flex-grow: 1;
 }
 
 .cardSwipeDiv {
 	position: absolute;
-	top: 5%;
-	left: 5%;
-	width: 90%;
-	height: 90%;
+	width: 100%;
+	height: 100%;
+	left: 0;
 	text-align: center;
-	border: 1px solid black;
 	background-color: white;
-	display: flex;
+   display: flex;
 	flex-direction: column;
-	user-select:none;
+	user-select: none;
+   border-radius: 5px;
+   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+	transition-property: left, opacity, box-shadow;
+	transition-duration: 0.5s;
+	transition-timing-function: ease-in-out;
 }
 
-.cardSwipeDiv > p:first-child > a {
+.cardSwipeDiv:hover {
+   box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.cardSwipeDivLeft {
+	left: -50px !important;
+	opacity: 0 !important;
+}
+
+.cardSwipeDiv > :first-child > a {
 	text-decoration: none;
 }
 
-.cardSwipeDiv > p:first-child {
+.cardSwipeDiv > :first-child {
 	margin: 0;
 	padding: 16px;
 }
 
 .cardSwipeDiv .cardSwipeContent {
-	height: 100%;
+   flex-grow: 1;
 	width: 100%;
 	border-top-style: solid;
 	border-top-width: 0;
 	overflow: auto;
-	transition-property: height, border-top-width;
-	transition-duration: 0.5s;
-	transition-timing-function: ease-in-out;
+}
+
+/* Flash Card */
+.cardFlipMasterDiv {
+   display: flex;
+   flex-wrap: wrap;
+}
+
+.cardFlipDiv {
+   flex-basis: 250px;
+   flex-grow: 1;
+   margin-right: 24px;
+   margin-bottom: 24px;
+   background-color: transparent;
+   width: 300px;
+   max-width: 500px;
+   height: 200px;
+}
+
+.cardFlipDivDiv {
+   position: relative;
+   width: 100%;
+   height: 100%;
+   text-align: center;
+   border: 1px solid rgba(155, 155, 155, 0.5);
+}
+
+.cardFlipFront, .cardFlipBack {
+   position: absolute;
+   width: 100%;
+   height: 100%;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   flex-direction: column;
+   overflow: hidden;
+}
+
+.cardFlipFront {
+   font-weight: bold;
+   font-size: 20px;
+   background-color: ghostwhite;
+   color: black;
+   word-wrap: break-word;
+   text-align: center;
+   z-index: 1;
+}
+
+.cardFlipFront > *:not(img) {
+   width: calc(100% - 48px);
+   margin: 24px;
+}
+
+.cardFlipFront > img {
+   width: 100%;
+   height: 100%;
+}
+
+.cardFlipBack {
+   background-color: dodgerblue;
+   color: white;
+   padding: 24px;
+   font-size: 16px;
+   font-weight: bold;
+}
+
+.cardFlipBack > * {
+   max-height: 100%;
+   max-width: 100%;
+}
+
+/* Checklist */
+.checkBoxPageDiv {
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   padding: 24px;
+   border: 1px solid rgba(122,122,122,0.3);
+   box-shadow: 0.45rem 0.55rem 24px #888888;
+}
+
+.checkBoxPageDiv > .checkboxContainer:first-of-type {
+   margin-top: 24px;
+}
+
+.checkBoxPageDiv > :first-child {
+   margin: 0;
+}
+
+.checkboxContainer {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 24px 24px 24px 59px;
+  height: 25px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  font-size: 18px;
+}
+
+.checkboxContainer:nth-child(even) {
+   background-color: #eee;
+}
+
+.checkboxContainer:nth-child(odd) {
+   background-color: #f9f9f9;
+   border-top-width: 1px;
+   border-top-style: solid;
+   border-top-color: rgba(98,98,98,0.2);
+   border-bottom-width: 1px;
+   border-bottom-style: solid;
+   border-bottom-color: rgba(98,98,98,0.2);
+}
+
+.checkboxContainer input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  top: 24px;
+  left: 24px;
+  height: 0;
+  width: 0;
+}
+
+.checkboxContainerCheckmark {
+   margin: 0;
+   min-width: 20px;
+   width: 100%;
+}
+
+.checkboxContainerCheckmark:active::before {
+   box-shadow:0 0 0 .2rem rgba(0,123,255,.25);
+}
+
+.checkboxContainerCheckmark::before {
+   content: "";
+   position: absolute;
+   top: 14px;
+   left: 14px;
+   height: 25px;
+   width: 25px;
+   background-color: #d9d9d9;
+   border-radius: 4px;
+   cursor: pointer;
+   transition:color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.checkboxContainerCheckmark:hover::before{
+   opacity: .75;
+}
+
+.checkboxContainer input:checked ~ .checkboxContainerCheckmark::before {
+   background-color: #007bff;
+}
+
+.checkboxContainerCheckmark::after {
+  content: "";
+  position: absolute;
+  display: none;
+  cursor: pointer;
+}
+
+.checkboxContainer input:checked ~ .checkboxContainerCheckmark::after {
+  display: block;
+}
+
+.checkboxContainer .checkboxContainerCheckmark::after {
+  left: 23px;
+  top: 19px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+/* Customize tabs */
+.tabComponent {
+   display: flex;
+   flex-wrap: wrap;
+   background-color: #f1f1f1;
+}
+
+.tabComponentLinks {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   width: auto;
+   padding: 0 24px;
+   height: 50px;
+   border-radius: 4px 4px 0 0;
+   background-color: rgba(233,233,221,0.2);
+   cursor: pointer;
+   -webkit-user-select: none;
+   -moz-user-select: none;
+   -ms-user-select: none;
+   user-select: none;
+}
+
+.tabComponentLinks:hover {
+   background-color: rgba(233,233,221,0.6);
+}
+
+.tabComponentLinks.tabComponentActive {
+   background-color: #ccc;
+}
+
+.tabComponentLinks.tabComponentActive:hover {
+   background-color: rgba(100,100,100,0.3);
+}
+
+.tabComponentContentDiv {
+   display: inline-block;
+   width: calc(100% - 2px);
+   margin: 0;
+   border: 1px solid #ccc;
+}
+
+.tabComponentContentDiv > .tabComponentContent:first-child {
+   display: block;
+}
+
+.tabComponentContent {
+   display: none !important;
+   padding: 24px;
+}
+
+.tabComponentContent.tabActiveContent {
+   display: block !important;
+}
+
+/* Custom numbers */
+.fancyNumbers {
+   display: flex;
+   align-items: center;
+   margin-bottom: 8px;
+   margin-left: 15px;
+}
+
+.fancyNumbers p {
+	margin: 0;
+}
+
+.fancyNumbers > div:nth-child(2) {
+   width: 100%;
+}
+
+.fancyNumbersCircle {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   min-width: 30px;
+   min-height: 30px;
+   background-color: #6600cc;
+   border-radius: 100%;
+   font-size: 20px;
+   color: white;
+   font-weight: 600;
+   margin-right: 15px;
 }
 
 @media only screen and (max-width: 425px) {
@@ -408,7 +784,6 @@ p {
    .page1BottomExample > :first-child {
       flex-grow: 1;
    }
-
 }
 
 @media only screen and (min-width: 425px) and (max-width: 768px){
@@ -423,17 +798,21 @@ p {
    #page1BottomDiv {
       font-size: 24px;
    }
+
+   .cardFlipBack {
+      font-size: 25px;
+   }
 }
 
 @media only screen and (min-width: 768px) {
-   #page1TopDivButtonDiv > button {
+   #page1TopDivButtonDiv button {
       font-size: 42px;
       width: 30%;
       max-width: 250px;
    }
 
    #page1TopDivTitle {
-      font-size: 160px;
+      font-size: 120px;
    }
    #page1BottomDivTitle, #page1BottomDivWhyTitle {
       font-size: 56px;
@@ -455,12 +834,34 @@ p {
    }
 
    #page2BottomLeftDiv {
-      flex-direction: row;
+      display: flex;
    }
 
    #page2BottomLeftDivLeftDiv {
-      width: unset;
-      height: 0;
+      height: unset;
+      width: 0;
+      transition-property: width;
+      transition-duration: 1s;
+      transition-timing-function: ease-in-out;
+   }
+   #page2BottomLeftDivLeftDiv.expand {
+      width: 250px;
+      height: 100%;
+   }
+
+   #templateMainDiv {
+      flex-direction: column;
+      height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+   }
+
+   .templateDivs {
+      margin: 72px 0;
+   }
+
+   .templateDivs > img {
+      width: 100%;
    }
 
    #page2BottomLeftDivRightDiv {
@@ -495,5 +896,9 @@ p {
 
    #cardIndexIndicator {
       font-size: 24px;
+   }
+
+   .cardFlipBack {
+      font-size: 30px;
    }
 }

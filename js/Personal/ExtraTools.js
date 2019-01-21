@@ -1,25 +1,3 @@
-$(function() {
-   checkElement();
-
-   $('[data-toggle="popover"]').popover({
-      trigger: 'focus'
-   });
-
-   $(document).on("click", function(e) {
-      let i = 0;
-      let nodeYouWant = e.target;
-      while(nodeYouWant && i < 3) {
-         if(nodeYouWant.className === "accordionDiv") {
-            selectedAccordionForDeletion = nodeYouWant;
-            break;
-         } else {
-            nodeYouWant = nodeYouWant.parentNode;
-            i++;
-         }
-      }
-   });
-});
-
 // For every element you want to have animation, insert id here and set opacity to 0 in the CSS
 let elementsArray = [
    "page1TopDivTitle",
@@ -36,12 +14,75 @@ let elementsArray = [
    "page1BottomWhyTitle",
    "page1BottomWhyDetails"
 ];
-
-let isAccordion = !1;
+// Only works if element is in #componentsDiv > *
+let excludeInHidden = [
+   "#cardIndicatorDiv"
+];
+// CodeMirror object
+let cm;
+// Current template selected
+let isAccordion = 0;
 // To track card current slide
 let cardCurrent;
 let cardCurrentIndex;
-let selectedAccordionForDeletion;
+// To track number list index
+let numberListIndex;
+// Elements to be removed
+let selectedAccordionForDeletion, selectedFlashCardForDeletion, selectedChecklistForDeletion, selectedTabForDeletion, selectedNumberListForDeletion;
+// Track double click
+let latestTap;
+
+$(function () {
+   // Random generator for checklist
+   sjcl.random.startCollectors();
+   // Check if elements need to be animated for page1
+   checkElement();
+
+   require([
+      "js/codemirror-5.42.2/lib/codemirror", "js/codemirror-5.42.2/mode/htmlmixed/htmlmixed", "js/codemirror-5.42.2/addon/selection/active-line"
+   ], function (CodeMirror) {
+      cm = CodeMirror.fromTextArea(document.getElementById("rawTextarea"), {
+         styleActiveLine: true,
+         matchBrackets: true,
+         theme: "shadowfox",
+         mode: "htmlmixed"
+      });
+   });
+
+   $('[data-toggle="popover"]').popover({
+      trigger: 'focus'
+   });
+
+   // Remember to <break;> otherwise will freeze the browser
+   $(document).on("click", function (e) {
+      let i = 0;
+      let nodeYouWant = e.target;
+      while (nodeYouWant && i < 3) {
+         if (nodeYouWant.className === "accordionDiv") {
+            selectedAccordionForDeletion = nodeYouWant;
+            break;
+         } else if (nodeYouWant.className === "cardFlipDiv") {
+            selectedFlashCardForDeletion = nodeYouWant;
+            break;
+         } else if (nodeYouWant.className === "checkboxContainer"){
+            selectedChecklistForDeletion = nodeYouWant;
+            break;
+         } else if (nodeYouWant.classList.contains("tabComponentLinks") || nodeYouWant.classList.contains("tabComponentContent")) {
+            selectedTabForDeletion = Array.prototype.indexOf.call(nodeYouWant.parentElement.children, nodeYouWant);
+            break;
+         } else if (nodeYouWant.className === "fancyNumbers") {
+            selectedNumberListForDeletion = nodeYouWant;
+            break;
+         } else {
+            nodeYouWant = nodeYouWant.parentNode;
+            i++;
+         }
+      }
+   });
+
+   $(document).on("keydown", "[contentEditable]", setHiddenHTML);
+   $(document).on("keyup", "[contentEditable]", setHiddenHTML);
+});
 
 function checkElement() {
    for (i = 0; i < elementsArray.length; i++) {
@@ -65,6 +106,9 @@ function animateElement(theElement) {
 }
 
 function animatePage1Out() {
+   document.body.scrollTop = 0;
+   document.documentElement.scrollTop = 0;
+   $("body").css("overflow", "hidden");
    // Show page2
    let page2 = $("#page2");
    page2.css("display", "flex");
@@ -74,7 +118,8 @@ function animatePage1Out() {
 
    // Hide page1
    let page1 = $("#page1");
-   page1.hide("fold", 1200, function() {
+   page1.hide("fold", 1200, function () {
+      $("body").css("overflow", "auto");
       page1.css("display", "none");
 
       page2.css("position", "");
@@ -87,12 +132,13 @@ function animatePage1Out() {
          if ($(element).css("opacity") == 0) {
             continue;
          }
-         element.style.opacity = "0";
+         element.style.opacity = 0;
       }
    });
 }
 
 function animatePage1In() {
+   $("body").css("overflow", "hidden");
    cardCurrent = null;
    cardCurrentIndex = 0;
    let page2 = $("#page2");
@@ -101,7 +147,8 @@ function animatePage1In() {
    page2.css("left", "0");
 
    let page1 = $("#page1");
-   page1.show("fold", 1200, function() {
+   page1.show("fold", 1200, function () {
+      $("body").css("overflow", "auto");
       page2.css("display", "none");
       page2.css("position", "");
       page2.css("top", "");
@@ -111,6 +158,7 @@ function animatePage1In() {
 }
 
 function animatePage2Out() {
+   $("body").css("overflow", "hidden");
    // Show page3
    let page3 = $("#page3");
    page3.css("display", "flex");
@@ -122,7 +170,8 @@ function animatePage2Out() {
    let page2 = $("#page2");
    page2.hide("drop", {
       direction: "down"
-   }, 1200, function() {
+   }, 1200, function () {
+      $("body").css("overflow", "auto");
       page2.css("display", "none");
 
       page3.css("position", "");
@@ -132,6 +181,7 @@ function animatePage2Out() {
 }
 
 function animatePage2In() {
+   $("body").css("overflow", "hidden");
    // Show page3
    let page3 = $("#page3");
    page3.css("position", "absolute");
@@ -142,7 +192,8 @@ function animatePage2In() {
    let page2 = $("#page2");
    page2.show("drop", {
       direction: "down"
-   }, 1200, function() {
+   }, 1200, function () {
+      $("body").css("overflow", "auto");
       page3.css("display", "none");
       page3.css("position", "");
       page3.css("top", "");
@@ -151,13 +202,15 @@ function animatePage2In() {
 }
 
 function animatePage3Out() {
+   $("body").css("overflow", "hidden");
    let page3 = $("#page3");
    page3.css("position", "absolute");
    page3.css("top", "0");
    page3.css("left", "0");
 
    let page1 = $("#page1");
-   page1.show("fold", 1200, function() {
+   page1.show("fold", 1200, function () {
+      $("body").css("overflow", "auto");
       page3.css("display", "none");
       page3.css("position", "");
       page3.css("top", "");
@@ -166,84 +219,96 @@ function animatePage3Out() {
    });
 }
 
-function loadAccordionPreset() {
+function createNewButton() {
+   // Replace the hidden area with template
+   $("#componentsDiv").empty();
+   animatePage1Out();
+
+   let page2BottomLeftDivLeftDiv = document.getElementById("page2BottomLeftDivLeftDiv");
+   document.getElementById("hiddenCodeTextarea").style.display = "none";
+   document.getElementById("templateMainDiv").style.display = "flex";
+   page2BottomLeftDivLeftDiv.className = "expand";
+}
+
+function importPresetShowModal() {
+   $("#importTextarea").val("");
+   $('#importDiv').modal('show');
+}
+
+function hideImportModal() {
+   $('#importDiv').modal('hide');
+}
+
+function checkImportTextarea() {
+   let importedText = $("#importTextarea").val();
+   if (importedText) {
+      let tempDiv = $('<div>').append($(importedText).clone());
+      if (tempDiv.find(".accordion").html()) {
+         loadImportedAccordion(tempDiv);
+         return !0;
+      } else if (tempDiv.find(".cardAnimationDiv").html()) {
+         loadImportedCard(tempDiv);
+         return !0;
+      }
+   }
+   alert("None detected");
+}
+
+function loadImportedAccordion(tempDiv) {
+   $("#componentsDiv").empty();
+
+   tempDiv.find(".accordion").each(function () {
+      let accordionDivDiv = document.createElement("div");
+      accordionDivDiv.className = "accordionDiv";
+      // Draggable
+      let accordionDraggableDiv = document.createElement("div");
+      accordionDraggableDiv.className = "accordionDraggableDiv progress-bar-striped bg-success";
+
+      // Accordion
+      let accordionTitle = $(this).children().eq(0)[0];
+      accordionTitle.contentEditable = "true";
+      accordionTitle.setAttribute("onclick", "doubletap(this)");
+
+      let accordionContent = $(this).find(".accordionContent")[0];
+      accordionContent.className = "accordionContent contenteditableBr";
+      accordionContent.contentEditable = "true";
+
+      accordionDivDiv.appendChild(accordionDraggableDiv);
+      accordionDivDiv.appendChild(this);
+
+      $("#componentsDiv").append(accordionDivDiv);
+   });
+
    isAccordion = !0;
-   let componentsDiv = document.getElementById("componentsDiv");
-   let accordionDiv = addNewAccordion();
-   $(componentsDiv).empty();
-   componentsDiv.appendChild(accordionDiv);
+   $("#page2TopBarDivTitle > p").text("Accordion");
    makeSortable();
+   hideImportModal();
    animatePage1Out();
 }
 
-function addNewAccordion() {
-   let accordionDivDiv = document.createElement("div");
-   accordionDivDiv.className = "accordionDiv";
-   // Draggable
-   let accordionDraggableDiv = document.createElement("div");
-   accordionDraggableDiv.className = "accordionDraggableDiv progress-bar-striped bg-success";
-   // Accordion
-   let accordionDiv = document.createElement("div");
-   accordionDiv.className = "accordion";
-   let accordionTitle = document.createElement("p");
-   accordionTitle.contentEditable = "true";
-   accordionTitle.appendChild(document.createTextNode("Enter Title Here"));
-   // Double click for editing... remember to change on output
-   accordionTitle.setAttribute("onclick", "doubletap(this)");
-   contentEditableBr(accordionTitle);
+function loadImportedCard(tempDiv) {
+   $("#componentsDiv").empty();
 
-   let accordionContent = document.createElement("div");
-   // Contenteditable for editing... remember to change on output
-   accordionContent.className = "accordionContent contenteditableBr";
-   accordionContent.contentEditable = "true";
-   accordionContent.innerHTML = "<p>Enter Content Here</p>";
-
-   contentEditableBr();
-
-   accordionDiv.appendChild(accordionTitle);
-   accordionDiv.appendChild(accordionContent);
-
-   accordionDivDiv.appendChild(accordionDraggableDiv);
-   accordionDivDiv.appendChild(accordionDiv);
-
-   return accordionDivDiv;
-}
-
-function removeSection() {
-   if(isAccordion) {
-      if(selectedAccordionForDeletion) {
-         $(selectedAccordionForDeletion).remove();
-      }
-   }else{
-      if(cardCurrentIndex) {
-         if(cardCurrentIndex > 0) {
-            goLeft();
-            // Compensate for goLeft
-            $(".cardAnimationDiv").children().eq(cardCurrentIndex + 1).remove();
-         }else if(cardCurrentIndex === 0 && $(".cardAnimationDiv").children().length > 1) {
-            goRight();
-            // Compensate for goRight
-            $(".cardAnimationDiv").children().eq(cardCurrentIndex - 1).remove();
-         }
-         setCardIndicator();
-         startupCardWithoutHide();
-      }
-   }
-}
-
-function loadCardPreset() {
-   isAccordion = !1;
-   cardCurrentIndex = 0;
-
-   // Adding the card
    let cardAnimationDiv = document.createElement("div");
    cardAnimationDiv.className = "cardAnimationDiv";
-   cardAnimationDiv.appendChild(addNewCard());
-   let componentsDiv = document.getElementById("componentsDiv");
-   $(componentsDiv).empty();
-   componentsDiv.appendChild(cardAnimationDiv);
-   // Code that also be needed to be added at output
-   // for(var oriPos,z=0;z!=document.getElementsByClassName("cardAnimationDiv").length;){for(var nodeArray=document.getElementsByClassName("cardAnimationDiv")[z].children,i=0,j=nodeArray.length-1;i!=nodeArray.length;)nodeArray[i].style.zIndex=j,1!=i&&0!=i&&(nodeArray[i].style.display="none"),i++,j--;z++};
+   tempDiv.find(".cardSwipeDiv").each(function () {
+      this.removeAttribute("onmousedown");
+      this.removeAttribute("onmouseup");
+      this.removeAttribute("ontouchstart");
+      this.removeAttribute("ontouchend");
+      this.setAttribute("ondblclick", "ifDblClicked(this)");
+
+      let cardAnimationDivTitle = $(this).children().eq(0)[0];
+      cardAnimationDivTitle.className = "contenteditableBr";
+      cardAnimationDivTitle.contentEditable = "true";
+
+      let cardSwipeContent = $(this).find(".cardSwipeContent");
+      cardSwipeContent.className = "cardSwipeContent contenteditableBr";
+      cardSwipeContent.contentEditable = "true";
+
+      cardAnimationDiv.appendChild(this);
+   });
+   $("#componentsDiv").append(cardAnimationDiv);
 
    // Div to contain the buttons
    let cardIndicatorDiv = document.createElement("div");
@@ -266,86 +331,580 @@ function loadCardPreset() {
    cardIndicatorDiv.appendChild(backBtn);
    cardIndicatorDiv.appendChild(cardIndexIndicator);
    cardIndicatorDiv.appendChild(forwardBtn);
-   componentsDiv.appendChild(cardIndicatorDiv);
+   $("#componentsDiv").append(cardIndicatorDiv);
 
+   cardCurrentIndex = 0;
+   if (!cardCurrent) {
+      cardCurrent = $(cardAnimationDiv).find(".cardSwipeDiv").eq(0)[0];
+   }
+
+   $("#page2TopBarDivTitle > p").text("Card");
+   startupCard();
    setCardIndicator();
+   hideImportModal();
    animatePage1Out();
 }
 
+function showTemplates() {
+   let page2BottomLeftDivLeftDiv = document.getElementById("page2BottomLeftDivLeftDiv");
+   if ($(page2BottomLeftDivLeftDiv).hasClass("expand")) {
+      if (document.getElementById("templateMainDiv").style.display === "none") {
+         document.getElementById("hiddenCodeTextarea").style.display = "none";
+         document.getElementById("templateMainDiv").style.display = "flex";
+      } else {
+         page2BottomLeftDivLeftDiv.className = "";
+      }
+   } else {
+      document.getElementById("hiddenCodeTextarea").style.display = "none";
+      document.getElementById("templateMainDiv").style.display = "flex";
+      page2BottomLeftDivLeftDiv.className = "expand";
+   }
+}
+
+// Components Presets
+function loadAccordionPreset() {
+   showTemplates();
+   isAccordion = 0;
+   $("#page2TopBarDivTitle > p").text("Accordion");
+   let componentsDiv = document.getElementById("componentsDiv");
+   let accordionDiv = addNewAccordion();
+   $(componentsDiv).empty();
+   componentsDiv.appendChild(accordionDiv);
+   makeSortable();
+}
+
+function loadAccordionAltPreset() {
+   showTemplates();
+   isAccordion = 1;
+   $("#page2TopBarDivTitle > p").text("Accordion Alternate");
+   let componentsDiv = document.getElementById("componentsDiv");
+   let accordionDiv = addNewAltAccordion();
+   $(componentsDiv).empty();
+   componentsDiv.appendChild(accordionDiv);
+   makeSortable();
+}
+
+function loadCardPreset() {
+   showTemplates();
+   isAccordion = 2;
+   cardCurrentIndex = 0;
+
+   $("#page2TopBarDivTitle > p").text("Card");
+   // Adding the card
+   let cardAnimationDiv = document.createElement("div");
+   cardAnimationDiv.className = "cardAnimationDiv";
+   // CardSwipeDivDiv is for Alt but left in for original also
+   let cardSwipeDivDiv = document.createElement("div");
+   cardSwipeDivDiv.className = "cardSwipeDivDiv";
+   cardSwipeDivDiv.appendChild(addNewCard());
+   let componentsDiv = document.getElementById("componentsDiv");
+   $(componentsDiv).empty();
+   cardAnimationDiv.appendChild(cardSwipeDivDiv);
+   componentsDiv.appendChild(cardAnimationDiv);
+   // Code that also be needed to be added at output
+   // for(let oriPos,z=0;z!=document.getElementsByClassName("cardAnimationDiv").length;){for(let nodeArray=document.getElementsByClassName("cardAnimationDiv")[z].children,i=0,j=nodeArray.length-1;i!=nodeArray.length;)nodeArray[i].style.zIndex=j,1!=i&&0!=i&&(nodeArray[i].style.display="none"),i++,j--;z++};
+
+   // Div to contain the buttons
+   let cardIndicatorDiv = document.createElement("div");
+   cardIndicatorDiv.id = "cardIndicatorDiv";
+   // Adding buttons for navigation
+   let backBtn = document.createElement("button");
+   backBtn.className = "btn btn-info";
+   backBtn.id = "cardBackButton";
+   backBtn.setAttribute("onclick", "goLeft(this.parentElement.previousElementSibling.children[0])");
+   backBtn.appendChild(document.createTextNode("View Previous Slide"));
+   let forwardBtn = document.createElement("button");
+   forwardBtn.className = "btn btn-info";
+   forwardBtn.id = "cardNextButton";
+   forwardBtn.setAttribute("onclick", "ifDblClicked(this.parentElement.previousElementSibling.children[0])");
+   forwardBtn.appendChild(document.createTextNode("View Next Slide"));
+
+   let totalCardChild = $(".cardAnimationDiv").children().length;
+   let cardIndexIndicator = document.createElement("p");
+   cardIndexIndicator.id = "cardIndexIndicator";
+   cardIndexIndicator.className = "text-success";
+
+   cardIndicatorDiv.appendChild(backBtn);
+   cardIndicatorDiv.appendChild(cardIndexIndicator);
+   cardIndicatorDiv.appendChild(forwardBtn);
+   componentsDiv.appendChild(cardIndicatorDiv);
+
+   setCardIndicator();
+}
+
+// TODO
+function loadCardAltPreset() {
+
+}
+
+function loadFlashCardPreset() {
+   showTemplates();
+   isAccordion = 4;
+   $("#page2TopBarDivTitle > p").text("Flash Card");
+   let componentsDiv = document.getElementById("componentsDiv");
+   let cardFlipMasterDiv = document.createElement("div");
+   cardFlipMasterDiv.className = "cardFlipMasterDiv";
+   let cardFlipDiv = addNewFlashCard();
+   $(componentsDiv).empty();
+   cardFlipMasterDiv.appendChild(cardFlipDiv);
+   componentsDiv.appendChild(cardFlipMasterDiv);
+}
+
+function loadChecklistPreset() {
+   showTemplates();
+   isAccordion = 5;
+   $("#page2TopBarDivTitle > p").text("Checklist");
+   let componentsDiv = document.getElementById("componentsDiv");
+   let checkBoxPageDiv = document.createElement("div");
+   checkBoxPageDiv.className = "checkBoxPageDiv";
+   let checkBoxPageDivP = document.createElement("p");
+   checkBoxPageDivP.appendChild(document.createTextNode("Type Here"));
+   checkBoxPageDivP.contentEditable = "true";
+
+   checkBoxPageDiv.appendChild(checkBoxPageDivP);
+   checkBoxPageDiv.appendChild(addNewChecklist());
+   $(componentsDiv).empty();
+   componentsDiv.appendChild(checkBoxPageDiv);
+}
+
+function loadTabsPreset() {
+   showTemplates();
+   isAccordion = 6;
+   $("#page2TopBarDivTitle > p").text("Tabs");
+   let componentsDiv = document.getElementById("componentsDiv");
+   let tabComponent = document.createElement("div");
+   tabComponent.className = "tabComponent";
+   let tabComponentLinks = document.createElement("div");
+   tabComponentLinks.className = "tabComponentLinks tabComponentActive";
+   tabComponentLinks.setAttribute("ondblclick", tabsOnClick);
+   tabComponentLinks.contentEditable = "true";
+   let tabComponentLinksP = document.createElement("p");
+   tabComponentLinksP.appendChild(document.createTextNode("Type Here"));
+   let tabComponentContentDiv = document.createElement("div");
+   tabComponentContentDiv.className = "tabComponentContentDiv";
+   let tabComponentContent = document.createElement("div");
+   tabComponentContent.className = "tabComponentContent tabActiveContent";
+   tabComponentContent.contentEditable = "true";
+   let tabComponentContentP = document.createElement("p");
+   tabComponentContentP.appendChild(document.createTextNode("Type Here"));
+
+   tabComponentLinks.appendChild(tabComponentLinksP);
+   tabComponent.appendChild(tabComponentLinks);
+   tabComponentContent.appendChild(tabComponentContentP);
+   tabComponentContentDiv.appendChild(tabComponentContent);
+   $(componentsDiv).empty();
+   componentsDiv.appendChild(tabComponent);
+   componentsDiv.appendChild(tabComponentContentDiv);
+   contentEditableBr();
+}
+
+function loadNumberListPreset() {
+   showTemplates();
+   isAccordion = 7;
+   $("#page2TopBarDivTitle > p").text("Lists");
+   let componentsDiv = document.getElementById("componentsDiv");
+   $(componentsDiv).empty();
+   componentsDiv.appendChild(addNewNumberList());
+   getNumberListIndex();
+}
+
+// Adding and Removing
+function addNewSection() {
+   switch (isAccordion) {
+   case 0:
+      document.getElementById("componentsDiv").appendChild(addNewAccordion());
+      makeSortable();
+      break;
+   case 1:
+      document.getElementById("componentsDiv").appendChild(addNewAltAccordion());
+      makeSortable();
+      break;
+   case 2:
+      let newCard = addNewCard();
+      document.getElementsByClassName("cardSwipeDivDiv")[0].appendChild(newCard);
+      startupCard();
+      setCardIndicator();
+      break;
+   case 4:
+      document.getElementsByClassName("cardFlipMasterDiv")[0].appendChild(addNewFlashCard());
+      break;
+   case 5:
+      $(".checkBoxPageDiv").append(addNewChecklist());
+      break;
+   case 6:
+      let newTab = addNewTabs();
+      $(".tabComponent").append(newTab.tabComponentLinksTab);
+      $(".tabComponentContentDiv").append(newTab.tabComponentContentTab);
+      break;
+   case 7:
+      $("#componentsDiv").append(addNewNumberList());
+      break;
+   }
+   setHiddenHTML();
+}
+
+function removeSection() {
+   switch (isAccordion) {
+   case 0:
+   case 1:
+      if (selectedAccordionForDeletion) {
+         $(selectedAccordionForDeletion).remove();
+      }
+      break;
+   case 2:
+   case 3:
+      let cardSwipeDivDivChildren = cardCurrent.parentElement.children;
+      for (i = 0; i < cardSwipeDivDivChildren.length; i++) {
+         // Not first
+         if (cardSwipeDivDivChildren[i].style.display === "flex" && i >= 1) {
+            document.getElementById("cardBackButton").disabled = true;
+            document.getElementById("cardNextButton").disabled = true;
+            goLeft(document.getElementsByClassName("cardSwipeDivDiv")[0]);
+            setTimeout(function () {
+               cardCurrent.parentElement.removeChild(cardSwipeDivDivChildren[i]);
+               // Enable the Prev Slide Button
+               document.getElementById("cardBackButton").disabled = false;
+               document.getElementById("cardNextButton").disabled = false;
+               setCardIndicator();
+            }, 510);
+            cardCurrent = cardSwipeDivDivChildren[i - 1];
+            break;
+         } else if (cardSwipeDivDivChildren[i].style.display === "flex" && i === 0) {
+            document.getElementById("cardBackButton").disabled = true;
+            document.getElementById("cardNextButton").disabled = true;
+            cardCurrentIndex--;
+            ifDblClicked(document.getElementsByClassName("cardSwipeDivDiv")[0]);
+            setTimeout(function () {
+               cardCurrent.parentElement.removeChild(cardSwipeDivDivChildren[i]);
+               // Enable the Prev Slide Button
+               document.getElementById("cardBackButton").disabled = false;
+               document.getElementById("cardNextButton").disabled = false;
+               setCardIndicator();
+            }, 500);
+            cardCurrent = cardSwipeDivDivChildren[i + 1];
+            break;
+         }
+      }
+      break;
+   case 4:
+      if (selectedFlashCardForDeletion) {
+         $(selectedFlashCardForDeletion).remove();
+      }
+      break;
+   case 5:
+      if (selectedChecklistForDeletion) {
+         $(selectedChecklistForDeletion).remove();
+      }
+      break;
+   case 6:
+      if(!isNaN(selectedTabForDeletion)) {
+         let tabComponent = document.getElementsByClassName("tabComponent")[0];
+         let tabComponentContentDiv = document.getElementsByClassName("tabComponentContentDiv")[0];
+         tabComponent.removeChild(tabComponent.childNodes[selectedTabForDeletion]);
+         tabComponentContentDiv.removeChild(tabComponentContentDiv.childNodes[selectedTabForDeletion]);
+      }
+      break;
+   case 7:
+      if (selectedNumberListForDeletion) {
+         $(selectedNumberListForDeletion).remove();
+      }
+      break;
+   }
+   setHiddenHTML();
+}
+
+// Adding Section
+function addNewAccordion() {
+   let accordionDivDiv = document.createElement("div");
+   accordionDivDiv.className = "accordionDiv";
+   // Draggable
+   let accordionDraggableDiv = document.createElement("div");
+   accordionDraggableDiv.className = "accordionDraggableDiv progress-bar-striped bg-success";
+   // Accordion
+   let accordionDiv = document.createElement("div");
+   accordionDiv.className = "accordion";
+   let accordionTitleDiv = document.createElement("div");
+   // Double click for editing... remember to change on output
+   accordionTitleDiv.setAttribute("onclick", "accordionDoubletap(this)");;
+   accordionTitleDiv.contentEditable = "true";
+   let accordionTitle = document.createElement("p");
+   accordionTitle.appendChild(document.createTextNode("Enter Title Here"));
+   let accordionContent = document.createElement("div");
+   // Contenteditable for editing... remember to change on output
+   accordionContent.className = "accordionContent";
+   accordionContent.contentEditable = "true";
+   accordionContent.innerHTML = "<p>Enter Content Here</p>";
+
+   contentEditableBr();
+
+   accordionTitleDiv.appendChild(accordionTitle);
+   accordionDiv.appendChild(accordionTitleDiv);
+   accordionDiv.appendChild(accordionContent);
+
+   accordionDivDiv.appendChild(accordionDraggableDiv);
+   accordionDivDiv.appendChild(accordionDiv);
+
+   return accordionDivDiv;
+}
+
+function addNewAltAccordion() {
+   let accordionDivDiv = document.createElement("div");
+   accordionDivDiv.className = "accordionDiv";
+   // Draggable
+   let accordionDraggableDiv = document.createElement("div");
+   accordionDraggableDiv.className = "accordionDraggableDiv progress-bar-striped bg-success";
+   // Accordion
+   let accordionDiv = document.createElement("div");
+   accordionDiv.className = "accordionAlternate";
+   let accordionTitleDiv = document.createElement("div");
+   // Double click for editing... remember to change on output
+   accordionTitleDiv.setAttribute("onclick", "accordionAltDoubletap(this)");;
+   accordionTitleDiv.contentEditable = "true";
+   let accordionTitle = document.createElement("p");
+   accordionTitle.appendChild(document.createTextNode("Enter Title Here"));
+   contentEditableBr();
+
+   let accordionContent = document.createElement("div");
+   // Contenteditable for editing... remember to change on output
+   accordionContent.className = "accordionAlternateContent";
+   accordionContent.contentEditable = "true";
+   accordionContent.innerHTML = "<p>Enter Content Here</p>";
+
+   contentEditableBr();
+
+   accordionTitleDiv.appendChild(accordionTitle);
+   accordionDiv.appendChild(accordionTitleDiv);
+   accordionDiv.appendChild(accordionContent);
+
+   accordionDivDiv.appendChild(accordionDraggableDiv);
+   accordionDivDiv.appendChild(accordionDiv);
+
+   return accordionDivDiv;
+}
+
 function addNewCard() {
-   let cardAnimationDivTitle = document.createElement("p");
-   cardAnimationDivTitle.className = "contenteditableBr";
-   cardAnimationDivTitle.contentEditable = "true";
-   cardAnimationDivTitle.appendChild(document.createTextNode("Type here"));
    let cardSwipeDiv = document.createElement("div");
    cardSwipeDiv.className = "cardSwipeDiv";
    cardSwipeDiv.setAttribute("ondblclick", "ifDblClicked(this)");
+   let cardAnimationDivTitle = document.createElement("p");
+   cardAnimationDivTitle.contentEditable = "true";
+   cardAnimationDivTitle.appendChild(document.createTextNode("Type here"));
    let cardSwipeContent = document.createElement("div");
-   cardSwipeContent.className = "cardSwipeContent contenteditableBr";
+   cardSwipeContent.className = "cardSwipeContent";
    cardSwipeContent.contentEditable = "true";
-   cardSwipeContent.appendChild(document.createTextNode("Type here"));
+   let cardSwipeContentP = document.createElement("p");
+   cardSwipeContentP.appendChild(document.createTextNode("Type here"));
 
+   cardSwipeContent.appendChild(cardSwipeContentP);
    cardSwipeDiv.appendChild(cardAnimationDivTitle);
    cardSwipeDiv.appendChild(cardSwipeContent);
 
    contentEditableBr();
 
-   if(!cardCurrent) {
+   if (!cardCurrent) {
       cardCurrent = cardSwipeDiv;
    }
 
    return cardSwipeDiv;
 }
 
-function addNewSection() {
-   if (isAccordion) {
-      document.getElementById("componentsDiv").appendChild(addNewAccordion());
-      makeSortable()
+function setCardIndicator() {
+   $("#cardIndexIndicator").html((cardCurrentIndex + 1) + " <span style='color:#6c757d'>-</span> <span style='color:#dc3545'>" + $(".cardSwipeDivDiv").children().length + "</span>");
+}
+
+function addNewFlashCard() {
+   let cardFlipDiv = document.createElement("div");
+   cardFlipDiv.className = "cardFlipDiv";
+   let cardFlipDivDiv = document.createElement("div");
+   cardFlipDivDiv.className = "cardFlipDivDiv";
+   let cardFlipFront = document.createElement("div");
+   cardFlipFront.className = "cardFlipFront";
+   cardFlipFront.setAttribute("ondblclick", "this.style.display='none'");
+   cardFlipFront.contentEditable = "true";
+   let cardFlipFrontP = document.createElement("p");
+   cardFlipFrontP.appendChild(document.createTextNode("Type Here"));
+   let cardFlipBack = document.createElement("div");
+   cardFlipBack.className = "cardFlipBack";
+   cardFlipBack.setAttribute("ondblclick", "this.previousElementSibling.style.display='flex'");
+   let cardFlipBackP = document.createElement("p");
+   cardFlipBackP.appendChild(document.createTextNode("Type Here"));
+   cardFlipBack.contentEditable = "true";
+
+   cardFlipFront.appendChild(cardFlipFrontP);
+   cardFlipBack.appendChild(cardFlipBackP);
+   cardFlipDivDiv.appendChild(cardFlipFront);
+   cardFlipDivDiv.appendChild(cardFlipBack);
+   cardFlipDiv.appendChild(cardFlipDivDiv);
+
+   contentEditableBr();
+   return cardFlipDiv;
+}
+
+function addNewChecklist() {
+   let randomGenerated = getRandomWords();
+   let checkboxContainer = document.createElement("div");
+   checkboxContainer.className = "checkboxContainer";
+   let checkboxContainerCheckbox = document.createElement("input");
+   checkboxContainerCheckbox.setAttribute("onchange", "localStorage.setItem(this.id, this.checked)");
+   checkboxContainerCheckbox.type = "checkbox";
+   checkboxContainerCheckbox.id = randomGenerated;
+   let checkboxContainerCheckboxLabel = document.createElement("label");
+   checkboxContainerCheckboxLabel.className = "checkboxContainerCheckmark";
+   checkboxContainerCheckboxLabel.appendChild(document.createTextNode("Type Here"));
+   checkboxContainerCheckboxLabel.contentEditable = "true";
+
+   checkboxContainer.appendChild(checkboxContainerCheckbox);
+   checkboxContainer.appendChild(checkboxContainerCheckboxLabel);
+
+   return checkboxContainer;
+}
+
+function addNewTabs() {
+   let tabComponentLinks = document.createElement("div");
+   tabComponentLinks.className = "tabComponentLinks";
+   tabComponentLinks.setAttribute("ondblclick", tabsOnClick);
+   tabComponentLinks.contentEditable = "true";
+   let tabComponentLinksP = document.createElement("p");
+   tabComponentLinksP.appendChild(document.createTextNode("Type Here"));
+   let tabComponentContent = document.createElement("div");
+   tabComponentContent.className = "tabComponentContent";
+   tabComponentContent.contentEditable = "true";
+   let tabComponentContentP = document.createElement("p");
+   tabComponentContentP.appendChild(document.createTextNode("Type Here"));
+
+   tabComponentLinks.appendChild(tabComponentLinksP);
+   tabComponentContent.appendChild(tabComponentContentP);
+   contentEditableBr();
+
+   return {
+      tabComponentLinksTab: tabComponentLinks,
+      tabComponentContentTab: tabComponentContent
+   }
+}
+
+function addNewNumberList() {
+   getNumberListIndex();
+   let fancyNumbers = document.createElement("div");
+   fancyNumbers.className = "fancyNumbers";
+   let fancyNumbersCircle = document.createElement("div");
+   fancyNumbersCircle.className = "fancyNumbersCircle";
+   fancyNumbersCircle.contentEditable = "true";
+   let fancyNumbersCircleP = document.createElement("p");
+   fancyNumbersCircleP.appendChild(document.createTextNode(numberListIndex));
+   let fancyNumbersContent = document.createElement("div");
+   fancyNumbersContent.contentEditable = "true";
+   let fancyNumbersContentP = document.createElement("p");
+   fancyNumbersContentP.appendChild(document.createTextNode("Type Here"));
+   contentEditableBr();
+
+   fancyNumbersCircle.appendChild(fancyNumbersCircleP);
+   fancyNumbersContent.appendChild(fancyNumbersContentP);
+   fancyNumbers.appendChild(fancyNumbersCircle);
+   fancyNumbers.appendChild(fancyNumbersContent);
+
+   return fancyNumbers;
+}
+
+// Hidden HTML
+function toggleHiddenCodes() {
+   let page2BottomLeftDivLeftDiv = document.getElementById("page2BottomLeftDivLeftDiv");
+   if ($(page2BottomLeftDivLeftDiv).hasClass("expand")) {
+      if (document.getElementById("hiddenCodeTextarea").style.display === "none") {
+         document.getElementById("templateMainDiv").style.display = "none";
+         document.getElementById("hiddenCodeTextarea").style.display = "flex";
+      } else {
+         page2BottomLeftDivLeftDiv.className = "";
+      }
    } else {
-      let newCard = addNewCard();
-      document.getElementsByClassName("cardAnimationDiv")[0].appendChild(newCard);
-      startupCardWithoutHide();
+      document.getElementById("templateMainDiv").style.display = "none";
+      document.getElementById("hiddenCodeTextarea").style.display = "flex";
+      page2BottomLeftDivLeftDiv.className = "expand";
+   }
+   setHiddenHTML();
+}
+
+function updateComponentsDiv() {
+   let output = document.createElement("div");
+   output.innerHTML = cm.getValue();
+   let componentsDiv = $("#componentsDiv").clone().children();
+   for (i = 0; i < componentsDiv.length; i++) {
+      for (j = 0; j < excludeInHidden.length; j++) {
+         if ("#" + componentsDiv[i].id === excludeInHidden[j]) {
+            output.insertBefore(componentsDiv[i], output.childNodes[i]);
+         }
+      }
+   }
+   $("#componentsDiv").html(output.innerHTML);
+   if(isAccordion === 2) {
+      startupCard();
       setCardIndicator();
    }
 }
 
-function setCardIndicator() {
-   $("#cardIndexIndicator").html((cardCurrentIndex + 1) + " <span style='color:#6c757d'>-</span> <span style='color:#dc3545'>" + $(".cardAnimationDiv").children().length + "</span>");
+function setHiddenHTML() {
+   let componentsDiv = $("#componentsDiv").clone();
+   for (i = 0; i < excludeInHidden.length; i++) {
+      if (componentsDiv.find(excludeInHidden[i])) {
+         componentsDiv.find(excludeInHidden[i]).remove();
+      }
+   }
+   cm.setValue(html_beautify(componentsDiv.html(), {
+      indent_size: 2
+   }));
 }
 
+// Output page2
 function page2Output() {
    $("#tempTextarea").val("");
-   $("#tempDiv").html("");
+   $("#tempDiv").empty();
    let componentsDiv = $("#componentsDiv").clone();
-   if(isAccordion) {
-      componentsDiv.find(".accordion").each(function() {
+   switch (isAccordion) {
+   case 0: // Accordion
+      componentsDiv.find(".accordion").each(function () {
          let accordion = $(this);
          let accordionTitle = accordion.children().eq(0)[0];
          let accordionContent = accordion.children().eq(1)[0];
 
          // Remove contentEditable
-         accordionTitle.removeAttribute("contentEditable");
-         accordionContent.removeAttribute("contentEditable");
-         accordionContent.className = "accordionContent";
+         accordion[0].className = "accordion";
+         accordionTitle.removeAttribute("contenteditable");
+         accordionContent.removeAttribute("contenteditable");
 
          // Changing dblclick to click
-         accordionTitle.setAttribute("onclick", "this.nextElementSibling.className='accordionContent'===this.nextElementSibling.className?'accordionContent expand':'accordionContent';");
+         accordionTitle.setAttribute("onclick", "this.parentElement.className='accordion'===this.parentElement.className?'accordion expand':'accordion';");
          $("#tempTextarea")[0].value += accordion[0].outerHTML;
          $("#tempDiv")[0].innerHTML += accordion[0].outerHTML;
       });
-   }else {
-      $("#tempTextarea")[0].value = "<div class='cardAnimationDiv'>";
-      componentsDiv.find(".cardAnimationDiv > .cardSwipeDiv").each(function() {
+      break;
+   case 1: // Accordion Alternate
+      componentsDiv.find(".accordionAlternate").each(function () {
+         let accordion = $(this);
+         let accordionTitle = accordion.children().eq(0)[0];
+         let accordionContent = accordion.children().eq(1)[0];
+
+         // Remove contentEditable
+         accordion[0].className = "accordionAlternate";
+         accordionTitle.removeAttribute("contenteditable");
+         accordionContent.removeAttribute("contenteditable");
+
+         // Changing dblclick to click
+         accordionTitle.setAttribute("onclick", "this.parentElement.className='accordionAlternate'===this.parentElement.className?'accordionAlternate expand':'accordionAlternate';");
+         $("#tempTextarea")[0].value += accordion[0].outerHTML;
+      });
+      break;
+   case 2: // Card
+      componentsDiv.find(".cardAnimationDiv > .cardSwipeDivDiv > .cardSwipeDiv").each(function () {
          let card = $(this);
          let cardTitle = card.children().eq(0)[0];
          let cardContent = card.children().eq(1)[0];
 
          // Remove contentEditable
-         cardTitle.removeAttribute("contentEditable");
-         cardContent.removeAttribute("contentEditable");
+         cardTitle.removeAttribute("contenteditable");
+         cardContent.removeAttribute("contenteditable");
          cardTitle.removeAttribute("class");
          cardContent.className = "cardSwipeContent";
          this.removeAttribute("style");
+         this.removeAttribute("ondblclick");
          this.setAttribute("onmousedown",
             cardMouseDown
          );
@@ -358,15 +917,100 @@ function page2Output() {
          this.setAttribute("ontouchend",
             cardMouseUp
          );
-         this.setAttribute("ondblclick",
+         this.setAttribute("onclick",
             cardDblClick
          );
-         $("#tempTextarea")[0].value += this.outerHTML;
       });
+      $("#tempTextarea")[0].value += componentsDiv.find(".cardAnimationDiv")[0].outerHTML;
       $("#tempTextarea")[0].value += "</div><script>" + cardStartup + "</script>";
+      break;
+   case 3: // Card Alternate
+   case 4: // Flash Card
+      componentsDiv.find(".cardFlipDiv > .cardFlipDivDiv").each(function () {
+         let cardFlipDivDiv = $(this);
+         let cardFlipFront = cardFlipDivDiv.children().eq(0)[0];
+         let cardFlipBack = cardFlipDivDiv.children().eq(1)[0];
+
+         // Remove contentEditable
+         cardFlipFront.removeAttribute("ondblclick");
+         cardFlipFront.removeAttribute("contenteditable");
+         cardFlipFront.removeAttribute("style");
+         cardFlipBack.removeAttribute("ondblclick");
+         cardFlipBack.removeAttribute("contenteditable");
+         cardFlipBack.removeAttribute("style");
+      });
+      $("#tempTextarea")[0].value = componentsDiv.html();
+      break;
+   case 5: // Checklist
+      let checkBoxTitle = componentsDiv.find(".checkBoxPageDiv > :first-child")[0];
+      checkBoxTitle.removeAttribute("contenteditable");
+      componentsDiv.find(".checkboxContainer").each(function () {
+         let checkboxContainer = $(this);
+         let checkboxInput = checkboxContainer.children().eq(0)[0];
+         let checkboxLabel = checkboxContainer.children().eq(1)[0];
+
+         checkboxLabel.htmlFor = checkboxInput.id;
+         // Remove contentEditable
+         checkboxLabel.removeAttribute("contenteditable");
+      });
+      $("#tempTextarea")[0].value = componentsDiv.html();
+      $("#tempTextarea")[0].value += "<script>" + checklistStartup + "</script>";
+      break;
+   case 6: // Tabs
+      let first = !0;
+      componentsDiv.find(".tabComponentLinks").each(function () {
+         let tabComponentLinks = this;
+         if(first) {
+            tabComponentLinks.className = "tabComponentLinks tabComponentActive";
+            first = !1;
+         } else {
+            tabComponentLinks.className = "tabComponentLinks";
+         }
+
+         // Remove contentEditable
+         tabComponentLinks.setAttribute("onclick", tabsOnClick);
+         tabComponentLinks.removeAttribute("ondblclick");
+         tabComponentLinks.removeAttribute("contenteditable");
+      });
+      first = !0;
+      componentsDiv.find(".tabComponentContent").each(function () {
+         let tabComponentContent = this;
+         if(first) {
+            tabComponentContent.className = "tabComponentContent tabActiveContent";
+            first = !1;
+         } else {
+            tabComponentContent.className = "tabComponentContent";
+         }
+
+         // Remove contentEditable
+         tabComponentContent.removeAttribute("contenteditable");
+      });
+      $("#tempTextarea")[0].value = componentsDiv.html();
+      break;
+   case 7: // Lists
+      componentsDiv.find(".fancyNumbers").each(function () {
+         let fancyNumbers = $(this);
+         let fancyNumbersCircle = fancyNumbers.children().eq(0)[0];
+         let fancyNumbersContent = fancyNumbers.children().eq(1)[0];
+
+         // Remove contentEditable
+         fancyNumbersCircle.removeAttribute("contenteditable");
+         fancyNumbersContent.removeAttribute("contenteditable");
+      });
+      $("#tempTextarea")[0].value = componentsDiv.html();
+      break;
    }
 
    animatePage2Out();
+}
+
+function flashCardCheckEnterKey(e) {
+   if (e.keyCode === 13) {
+      // insert 2 br tags (if only one br tag is inserted the cursor won't go to the next line)
+      document.execCommand("insertHTML", false, "<br><h2>&nbsp;</h2>");
+      // prevent the default behaviour of return key pressed
+      return false;
+   }
 }
 
 function checkEnterKey(e) {
@@ -380,7 +1024,7 @@ function checkEnterKey(e) {
    }
    */
    if (e.keyCode === 8) {
-      if ($(this).html() === "<p><br></p>") {
+      if ($(this).html() === "<p><br></p>" || $(this).html() === "<h2><br></h2>") {
          // prevent the default behaviour of return key pressed
          return false;
       }
@@ -389,24 +1033,34 @@ function checkEnterKey(e) {
 
 function contentEditableBr() {
    // Make sure there is only one event attached
-   $(document).off("keydown", ".contenteditableBr", checkEnterKey);
+   $(document).off("keydown", "[contenteditable]", checkEnterKey);
 
    // Prevent creating div on enter
-   $(document).on("keydown", ".contenteditableBr", checkEnterKey);
+   $(document).on("keydown", "[contenteditable]", checkEnterKey);
 }
 
 // Check double click
-let latestTap;
-function doubletap(element) {
+function accordionDoubletap(element) {
    let now = new Date().getTime();
    let timesince = now - latestTap;
-   if((timesince < 400) && (timesince > 0)){
-      element.nextElementSibling.className='accordionContent contenteditableBr'===element.nextElementSibling.className?'accordionContent contenteditableBr expand':'accordionContent contenteditableBr';
+   if ((timesince < 400) && (timesince > 0)) {
+      element.parentElement.className = 'accordion' === element.parentElement.className ? 'accordion expand' : 'accordion';
+      latestTap = 0;
+   }else {
+      latestTap = new Date().getTime();
+   }
+}
+
+function accordionAltDoubletap(element) {
+   let now = new Date().getTime();
+   let timesince = now - latestTap;
+   if ((timesince < 400) && (timesince > 0)) {
+      element.parentElement.className = 'accordionAlternate' === element.parentElement.className ? 'accordionAlternate expand' : 'accordionAlternate';
       latestTap = 0;
       return !1;
+   } else {
+      latestTap = new Date().getTime();
    }
-
-   latestTap = new Date().getTime();
 }
 
 // Sortable
@@ -421,61 +1075,134 @@ function makeSortable() {
    });
 }
 
-// Card functions
-/*
-var oriPos;
+// Random word / number for Checklist
+function getRandomWords() {
+   let wordCount = 1;
+   let randomWords;
 
-var z = 0;
-while(z != document.getElementsByClassName("cardAnimationDiv").length) {
-   var nodeArray = document.getElementsByClassName("cardAnimationDiv")[z].children;
-
-   var i = 0;
-   var j = (nodeArray.length - 1);
-   while (i != nodeArray.length) {
-      nodeArray[i].style.zIndex = j;
-      if (i > 1) {
-         nodeArray[i].style.display = 'none';
+   if (window.crypto && window.crypto.getRandomValues) {
+      randomWords = new Int32Array(wordCount);
+      window.crypto.getRandomValues(randomWords);
+   } else if (window.msCrypto && window.msCrypto.getRandomValues) {
+      randomWords = new Int32Array(wordCount);
+      window.msCrypto.getRandomValues(randomWords);
+   } else if (sjcl.random.isReady()) {
+      randomWords = sjcl.random.randomWords(wordCount);
+   } else {
+      randomWords = [];
+      for (let i = 0; i < wordCount; i++) {
+         randomWords.push(isaac.rand());
       }
-      i++;
-      j--;
    }
 
-   z++;
-}
-*/
+   return randomWords;
+};
 
-function startupCardWithoutHide() {
-   var a=$(".cardAnimationDiv").children(),b=a.length;i=0;for(j=b-1;i<b;i++,j--)a[i].style.zIndex=j,a[i].style.display="flex";
+// Card functions
+
+function startupCard() {
+   let cardSwipeDivDiv = document.getElementsByClassName("cardSwipeDivDiv");
+   let oriPos;
+   let latestTap = 0;
+
+   for (i = 0; i != cardSwipeDivDiv.length; i++) {
+      let cardSwipeDiv = cardSwipeDivDiv[i].getElementsByClassName("cardSwipeDiv");
+      for (j = 0, k = cardSwipeDiv.length; j != cardSwipeDiv.length; j++, k--) {
+         cardSwipeDiv[j].style.zIndex = k;
+         if (cardSwipeDiv[j].style.display !== "none") {
+            cardSwipeDiv[j].style.display = "flex";
+            cardSwipeDiv[j].style.opacity = 1;
+         }
+      }
+   }
 }
 
-function getOriginalMousePosition(event) {
-   oriPos=event.clientX;void 0==oriPos&&(oriPos=event.changedTouches[0].clientX);
-}
+function goLeft(clickedParent) {
+   while (clickedParent && clickedParent.className !== "cardSwipeDivDiv") {
+      clickedParent = clickedParent.parentElement;
+   }
+   let cardSwipeDivDivChildren = clickedParent.children;
 
-function ifLeftOrRight(event, oriDiv) {
-   var nowCursor=event.clientX;void 0==nowCursor&&(nowCursor=event.changedTouches[0].clientX);for(oriDiv=this;"cardSwipeDiv"!==oriDiv.className;)oriDiv=oriDiv.parentNode;nowCursor<oriPos-.16*oriDiv.clientWidth?goLeft(oriDiv):nowCursor>oriPos+.16*oriDiv.clientWidth&&ifDblClicked(oriDiv);
-}
+   // Loop (i = 1 to prevent first)
+   if (cardSwipeDivDivChildren[0].style.display === "none") {
+      for (i = 1; i < cardSwipeDivDivChildren.length; i++) {
+         if (cardSwipeDivDivChildren[i].style.display === "flex") {
+            document.getElementById("cardBackButton").disabled = true;
+            document.getElementById("cardNextButton").disabled = true;
+            cardSwipeDivDivChildren[i].style.pointerEvents = "none";
+            cardSwipeDivDivChildren[i - 1].style.pointerEvents = "none";
+            cardSwipeDivDivChildren[i - 1].style.display = "flex";
+            setTimeout(function () {
+               cardSwipeDivDivChildren[i - 1].style.left = 0;
+               cardSwipeDivDivChildren[i - 1].style.opacity = 1;
+            }, 10);
+            setTimeout(function () {
+               cardSwipeDivDivChildren[i].style.pointerEvents = "auto";
+               cardSwipeDivDivChildren[i - 1].style.pointerEvents = "auto";
+               // Enable the Prev Slide Button
+               document.getElementById("cardBackButton").disabled = false;
+               document.getElementById("cardNextButton").disabled = false;
+            }, 510);
 
-function goLeft(oriDiv) {
-   for(!oriDiv&&cardCurrent&&(oriDiv=cardCurrent);"cardSwipeDiv"!==oriDiv.className;)oriDiv=oriDiv.parentNode;var a=oriDiv.previousElementSibling;
-   if(a&&"cardSwipeDiv"===a.className){var b=parseInt(a.style.marginLeft.substring(0,a.style.marginLeft.length-2)),c=0;a.style.display="flex";var d=setInterval(function(){1<=c?clearInterval(d):(0>b&&(b+=2),c+=.1,a.style.opacity=c,a.style.marginLeft=b+"px")},50);cardCurrent=a;cardCurrentIndex--;oriDiv.nextElementSibling&&(oriDiv.nextElementSibling.style.display="none")};
+            cardCurrent = cardSwipeDivDivChildren[i - 1];
+            cardCurrentIndex--;
+            break;
+         }
+      }
+   }
    setCardIndicator();
 }
 
-function ifDblClicked(oriDiv) {
-   for(!oriDiv&&cardCurrent&&(oriDiv=cardCurrent);"cardSwipeDiv"!==oriDiv.className;)oriDiv=oriDiv.parentNode;var a=oriDiv.nextElementSibling;if(a&&"cardSwipeDiv"===a.className){var b=oriDiv.nextElementSibling.nextElementSibling;b&&(b.style.display="flex");var c=0,d=1,e=setInterval(function(){0>=d?(oriDiv.style.display="none",clearInterval(e)):(c-=2,d-=.1,oriDiv.style.opacity=d,oriDiv.style.marginLeft=c+"px")},50);cardCurrent=a;cardCurrentIndex++};
+function ifDblClicked(clickedParent) {
+   while (clickedParent && clickedParent.className !== "cardSwipeDivDiv") {
+      clickedParent = clickedParent.parentElement;
+   }
+   let cardSwipeDivDivChildren = clickedParent.children;
+
+   // Loop (-1 to prevent last)
+   for (i = 0; i < cardSwipeDivDivChildren.length - 1; i++) {
+      if (cardSwipeDivDivChildren[i].style.display === "flex") {
+         document.getElementById("cardBackButton").disabled = true;
+         document.getElementById("cardNextButton").disabled = true;
+         cardSwipeDivDivChildren[i].style.pointerEvents = "none";
+         cardSwipeDivDivChildren[i + 1].style.pointerEvents = "none";
+         cardSwipeDivDivChildren[i].style.left = "-50px";
+         cardSwipeDivDivChildren[i].style.opacity = 0;
+         setTimeout(function () {
+            cardSwipeDivDivChildren[i].style.pointerEvents = "auto";
+            cardSwipeDivDivChildren[i + 1].style.pointerEvents = "auto";
+            cardSwipeDivDivChildren[i].style.display = "none";
+            document.getElementById("cardBackButton").disabled = false;
+            document.getElementById("cardNextButton").disabled = false;
+         }, 500);
+         cardCurrent = cardSwipeDivDivChildren[i + 1];
+         cardCurrentIndex++;
+         break;
+      }
+   }
    setCardIndicator();
 }
+
+// Number list function
+function getNumberListIndex() {
+   numberListIndex = document.getElementsByClassName("fancyNumbers").length + 1;
+}
+
+// Checklist functions
+let checklistStartup = "document.querySelectorAll('.checkboxContainer input').forEach(function(a){'true'===localStorage.getItem(a.id)&&(a.checked=!0)})";
+
+// Tabs functions
+let tabsOnClick = "for(var elementIndex=Array.prototype.indexOf.call(this.parentNode.children,this),a=this.parentElement.nextElementSibling.children,b=0;b<a.length;b++)a[b].className=b===elementIndex?'tabComponentContent tabActiveContent':'tabComponentContent';for(var a$0=this.parentElement.children,b$1=0;b$1<a$0.length;b$1++)a$0[b$1].className='tabComponentLinks';this.className='tabComponentLinks'===this.className?'tabComponentLinks tabComponentActive':'tabComponentLinks'";
 
 // Messy stuff
 // CardStartup script
-let cardStartup = "for(var a=0;a!=document.getElementsByClassName('cardAnimationDiv').length;){for(var b=document.getElementsByClassName('cardAnimationDiv')[a].children,c=0,d=b.length-1;c!=b.length;)b[c].style.zIndex=d,1!=c&&0!=c&&(b[c].style.display='none'),c++,d--;a++};";
+let cardStartup = "var cardSwipeDivDiv=document.getElementsByClassName('cardSwipeDivDiv'),oriPos,latestTap=0;for(i=0;i!=cardSwipeDivDiv.length;i++){var cardSwipeDiv=cardSwipeDivDiv[i].getElementsByClassName('cardSwipeDiv');j=0;for(k=cardSwipeDiv.length;j!=cardSwipeDiv.length;j++,k--)cardSwipeDiv[j].style.zIndex=k,cardSwipeDiv[j].style.display='flex',cardSwipeDiv[j].style.opacity=1};";
 
 // Mousedown / Touchstart
-let cardMouseDown = "var _0x9aa7=['\x59\x32\x78\x70\x5a\x57\x35\x30\x57\x41\x3d\x3d'];(function(_0x4d898b,_0x147fea){var _0x33b186=function(_0x227ac8){while(--_0x227ac8){_0x4d898b['\x70\x75\x73\x68'](_0x4d898b['\x73\x68\x69\x66\x74']());}};_0x33b186(++_0x147fea);}(_0x9aa7,0xed));var _0x79aa=function(_0x4d898b,_0x147fea){_0x4d898b=_0x4d898b-0x0;var _0x33b186=_0x9aa7[_0x4d898b];if(_0x79aa['\x69\x6e\x69\x74\x69\x61\x6c\x69\x7a\x65\x64']===undefined){(function(){var _0x1e824e=Function('\x72\x65\x74\x75\x72\x6e\x20\x28\x66\x75\x6e\x63\x74\x69\x6f\x6e\x20\x28\x29\x20'+'\x7b\x7d\x2e\x63\x6f\x6e\x73\x74\x72\x75\x63\x74\x6f\x72\x28\x22\x72\x65\x74\x75\x72\x6e\x20\x74\x68\x69\x73\x22\x29\x28\x29'+'\x29\x3b');var _0x257a42=_0x1e824e();var _0x3ff7f8='\x41\x42\x43\x44\x45\x46\x47\x48\x49\x4a\x4b\x4c\x4d\x4e\x4f\x50\x51\x52\x53\x54\x55\x56\x57\x58\x59\x5a\x61\x62\x63\x64\x65\x66\x67\x68\x69\x6a\x6b\x6c\x6d\x6e\x6f\x70\x71\x72\x73\x74\x75\x76\x77\x78\x79\x7a\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x2b\x2f\x3d';_0x257a42['\x61\x74\x6f\x62']||(_0x257a42['\x61\x74\x6f\x62']=function(_0x4182dd){var _0x40855e=String(_0x4182dd)['\x72\x65\x70\x6c\x61\x63\x65'](/=+$/,'');for(var _0x3a7dbd=0x0,_0x2d8d7a,_0x561bd2,_0x31ba83=0x0,_0x4e1401='';_0x561bd2=_0x40855e['\x63\x68\x61\x72\x41\x74'](_0x31ba83++);~_0x561bd2&&(_0x2d8d7a=_0x3a7dbd%0x4?_0x2d8d7a*0x40+_0x561bd2:_0x561bd2,_0x3a7dbd++%0x4)?_0x4e1401+=String['\x66\x72\x6f\x6d\x43\x68\x61\x72\x43\x6f\x64\x65'](0xff&_0x2d8d7a>>(-0x2*_0x3a7dbd&0x6)):0x0){_0x561bd2=_0x3ff7f8['\x69\x6e\x64\x65\x78\x4f\x66'](_0x561bd2);}return _0x4e1401;});}());_0x79aa['\x62\x61\x73\x65\x36\x34\x44\x65\x63\x6f\x64\x65\x55\x6e\x69\x63\x6f\x64\x65']=function(_0x4e1233){var _0x2b837e=atob(_0x4e1233);var _0x12f500=[];for(var _0x437556=0x0,_0x3171c9=_0x2b837e['\x6c\x65\x6e\x67\x74\x68'];_0x437556<_0x3171c9;_0x437556++){_0x12f500+='\x25'+('\x30\x30'+_0x2b837e['\x63\x68\x61\x72\x43\x6f\x64\x65\x41\x74'](_0x437556)['\x74\x6f\x53\x74\x72\x69\x6e\x67'](0x10))['\x73\x6c\x69\x63\x65'](-0x2);}return decodeURIComponent(_0x12f500);};_0x79aa['\x64\x61\x74\x61']={};_0x79aa['\x69\x6e\x69\x74\x69\x61\x6c\x69\x7a\x65\x64']=!![];}if(_0x79aa['\x64\x61\x74\x61'][_0x4d898b]===undefined){_0x33b186=_0x79aa['\x62\x61\x73\x65\x36\x34\x44\x65\x63\x6f\x64\x65\x55\x6e\x69\x63\x6f\x64\x65'](_0x33b186);_0x79aa['\x64\x61\x74\x61'][_0x4d898b]=_0x33b186;}else{_0x33b186=_0x79aa['\x64\x61\x74\x61'][_0x4d898b];}return _0x33b186;};oriPos=event[_0x79aa('0x0')];void 0x0==oriPos&&(oriPos=event['\x63\x68\x61\x6e\x67\x65\x64\x54\x6f\x75\x63\x68\x65\x73'][0x0][_0x79aa('0x0')]);";
+let cardMouseDown = "oriPos=event.clientX;void 0==oriPos&&(oriPos=event.changedTouches[0].clientX);";
 
 // Mouseup
-let cardMouseUp = "var _0x9aa7=['\x63\x47\x39\x70\x62\x6e\x52\x6c\x63\x6b\x56\x32\x5a\x57\x35\x30\x63\x77\x3d\x3d','\x5a\x47\x6c\x7a\x63\x47\x78\x68\x65\x51\x3d\x3d','\x59\x58\x56\x30\x62\x77\x3d\x3d','\x62\x33\x42\x68\x59\x32\x6c\x30\x65\x51\x3d\x3d','\x5a\x6d\x78\x6c\x65\x41\x3d\x3d','\x63\x48\x4a\x6c\x64\x6d\x6c\x76\x64\x58\x4e\x46\x62\x47\x56\x74\x5a\x57\x35\x30\x55\x32\x6c\x69\x62\x47\x6c\x75\x5a\x77\x3d\x3d','\x62\x57\x46\x79\x5a\x32\x6c\x75\x54\x47\x56\x6d\x64\x41\x3d\x3d','\x63\x33\x56\x69\x63\x33\x52\x79\x61\x57\x35\x6e','\x62\x47\x56\x75\x5a\x33\x52\x6f','\x53\x45\x31\x4e\x54\x51\x3d\x3d','\x59\x32\x68\x68\x62\x6d\x64\x6c\x5a\x46\x52\x76\x64\x57\x4e\x6f\x5a\x58\x4d\x3d','\x59\x32\x78\x70\x5a\x57\x35\x30\x57\x41\x3d\x3d','\x59\x32\x46\x79\x5a\x46\x4e\x33\x61\x58\x42\x6c\x52\x47\x6c\x32','\x59\x32\x78\x68\x63\x33\x4e\x4f\x59\x57\x31\x6c','\x63\x47\x46\x79\x5a\x57\x35\x30\x54\x6d\x39\x6b\x5a\x51\x3d\x3d','\x59\x32\x78\x70\x5a\x57\x35\x30\x56\x32\x6c\x6b\x64\x47\x67\x3d','\x62\x6d\x56\x34\x64\x45\x56\x73\x5a\x57\x31\x6c\x62\x6e\x52\x54\x61\x57\x4a\x73\x61\x57\x35\x6e','\x62\x6d\x39\x75\x5a\x51\x3d\x3d','\x63\x33\x52\x35\x62\x47\x55\x3d'];(function(_0x4d898b,_0x147fea){var _0x33b186=function(_0x227ac8){while(--_0x227ac8){_0x4d898b['\x70\x75\x73\x68'](_0x4d898b['\x73\x68\x69\x66\x74']());}};_0x33b186(++_0x147fea);}(_0x9aa7,0xed));var _0x79aa=function(_0x4d898b,_0x147fea){_0x4d898b=_0x4d898b-0x0;var _0x33b186=_0x9aa7[_0x4d898b];if(_0x79aa['\x69\x6e\x69\x74\x69\x61\x6c\x69\x7a\x65\x64']===undefined){(function(){var _0x1e824e=Function('\x72\x65\x74\x75\x72\x6e\x20\x28\x66\x75\x6e\x63\x74\x69\x6f\x6e\x20\x28\x29\x20'+'\x7b\x7d\x2e\x63\x6f\x6e\x73\x74\x72\x75\x63\x74\x6f\x72\x28\x22\x72\x65\x74\x75\x72\x6e\x20\x74\x68\x69\x73\x22\x29\x28\x29'+'\x29\x3b');var _0x257a42=_0x1e824e();var _0x3ff7f8='\x41\x42\x43\x44\x45\x46\x47\x48\x49\x4a\x4b\x4c\x4d\x4e\x4f\x50\x51\x52\x53\x54\x55\x56\x57\x58\x59\x5a\x61\x62\x63\x64\x65\x66\x67\x68\x69\x6a\x6b\x6c\x6d\x6e\x6f\x70\x71\x72\x73\x74\x75\x76\x77\x78\x79\x7a\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x2b\x2f\x3d';_0x257a42['\x61\x74\x6f\x62']||(_0x257a42['\x61\x74\x6f\x62']=function(_0x4182dd){var _0x40855e=String(_0x4182dd)['\x72\x65\x70\x6c\x61\x63\x65'](/=+$/,'');for(var _0x3a7dbd=0x0,_0x2d8d7a,_0x561bd2,_0x31ba83=0x0,_0x4e1401='';_0x561bd2=_0x40855e['\x63\x68\x61\x72\x41\x74'](_0x31ba83++);~_0x561bd2&&(_0x2d8d7a=_0x3a7dbd%0x4?_0x2d8d7a*0x40+_0x561bd2:_0x561bd2,_0x3a7dbd++%0x4)?_0x4e1401+=String['\x66\x72\x6f\x6d\x43\x68\x61\x72\x43\x6f\x64\x65'](0xff&_0x2d8d7a>>(-0x2*_0x3a7dbd&0x6)):0x0){_0x561bd2=_0x3ff7f8['\x69\x6e\x64\x65\x78\x4f\x66'](_0x561bd2);}return _0x4e1401;});}());_0x79aa['\x62\x61\x73\x65\x36\x34\x44\x65\x63\x6f\x64\x65\x55\x6e\x69\x63\x6f\x64\x65']=function(_0x4e1233){var _0x2b837e=atob(_0x4e1233);var _0x12f500=[];for(var _0x437556=0x0,_0x3171c9=_0x2b837e['\x6c\x65\x6e\x67\x74\x68'];_0x437556<_0x3171c9;_0x437556++){_0x12f500+='\x25'+('\x30\x30'+_0x2b837e['\x63\x68\x61\x72\x43\x6f\x64\x65\x41\x74'](_0x437556)['\x74\x6f\x53\x74\x72\x69\x6e\x67'](0x10))['\x73\x6c\x69\x63\x65'](-0x2);}return decodeURIComponent(_0x12f500);};_0x79aa['\x64\x61\x74\x61']={};_0x79aa['\x69\x6e\x69\x74\x69\x61\x6c\x69\x7a\x65\x64']=!![];}if(_0x79aa['\x64\x61\x74\x61'][_0x4d898b]===undefined){_0x33b186=_0x79aa['\x62\x61\x73\x65\x36\x34\x44\x65\x63\x6f\x64\x65\x55\x6e\x69\x63\x6f\x64\x65'](_0x33b186);_0x79aa['\x64\x61\x74\x61'][_0x4d898b]=_0x33b186;}else{_0x33b186=_0x79aa['\x64\x61\x74\x61'][_0x4d898b];}return _0x33b186;};alert(_0x79aa('0x0'));var nowCursor=event['\x63\x6c\x69\x65\x6e\x74\x58'];void 0x0==nowCursor&&(nowCursor=event[_0x79aa('0x1')][0x0][_0x79aa('0x2')]);for(oriDivB=this;_0x79aa('0x3')!==oriDiv[_0x79aa('0x4')];)oriDivB=oriDiv[_0x79aa('0x5')];if(nowCursor<oriPos-0.16*oriDiv[_0x79aa('0x6')]){var nextDiv=oriDiv[_0x79aa('0x7')];if(nextDiv&&'\x63\x61\x72\x64\x53\x77\x69\x70\x65\x44\x69\x76'===nextDiv[_0x79aa('0x4')]){var frame=function(){oriDiv['\x73\x74\x79\x6c\x65']['\x70\x6f\x69\x6e\x74\x65\x72\x45\x76\x65\x6e\x74\x73']=_0x79aa('0x8');nextDiv[_0x79aa('0x9')][_0x79aa('0xa')]=_0x79aa('0x8');0x0>=opa?(oriDiv['\x73\x74\x79\x6c\x65'][_0x79aa('0xb')]=_0x79aa('0x8'),oriDiv[_0x79aa('0x9')][_0x79aa('0xa')]=_0x79aa('0xc'),nextDiv[_0x79aa('0x9')][_0x79aa('0xa')]=_0x79aa('0xc'),clearInterval(id)):(pos-=0x2,opa-=0.1,oriDiv[_0x79aa('0x9')][_0x79aa('0xd')]=opa,oriDiv[_0x79aa('0x9')]['\x6d\x61\x72\x67\x69\x6e\x4c\x65\x66\x74']=pos+'\x70\x78');},nextNextDiv=oriDiv[_0x79aa('0x7')][_0x79aa('0x7')];nextNextDiv&&(nextNextDiv[_0x79aa('0x9')][_0x79aa('0xb')]=_0x79aa('0xe'));var pos=0x0,opa=0x1,id=setInterval(frame,0x32);}}else if(nowCursor>oriPos+0.16*oriDiv['\x63\x6c\x69\x65\x6e\x74\x57\x69\x64\x74\x68']){var prevDiv=oriDiv[_0x79aa('0xf')];prevDiv&&_0x79aa('0x3')===prevDiv[_0x79aa('0x4')]&&(frame=function(){oriDiv[_0x79aa('0x9')][_0x79aa('0xa')]=_0x79aa('0x8');prevDiv[_0x79aa('0x9')][_0x79aa('0xa')]=_0x79aa('0x8');0x1<=opa?(oriDiv[_0x79aa('0x9')][_0x79aa('0xa')]=_0x79aa('0xc'),prevDiv[_0x79aa('0x9')][_0x79aa('0xa')]=_0x79aa('0xc'),clearInterval(id)):(0x0>pos&&(pos+=0x2),opa+=0.1,prevDiv[_0x79aa('0x9')][_0x79aa('0xd')]=opa,prevDiv[_0x79aa('0x9')]['\x6d\x61\x72\x67\x69\x6e\x4c\x65\x66\x74']=pos+'\x70\x78');},pos=parseInt(prevDiv[_0x79aa('0x9')][_0x79aa('0x10')][_0x79aa('0x11')](0x0,prevDiv['\x73\x74\x79\x6c\x65']['\x6d\x61\x72\x67\x69\x6e\x4c\x65\x66\x74'][_0x79aa('0x12')]-0x2)),opa=0x0,prevDiv[_0x79aa('0x9')][_0x79aa('0xb')]=_0x79aa('0xe'),id=setInterval(frame,0x32),oriDiv[_0x79aa('0x7')]&&(oriDiv[_0x79aa('0x7')][_0x79aa('0x9')][_0x79aa('0xb')]=_0x79aa('0x8')));};";
+let cardMouseUp = "var nowCursor=event.clientX;void 0==nowCursor&&(nowCursor=event.changedTouches[0].clientX);for(var clickedParent=this;'cardSwipeDivDiv'!==clickedParent.className;)clickedParent=clickedParent.parentElement;if(nowCursor<oriPos-.16*clickedParent.clientWidth){var cardSwipeDivDivChildren=clickedParent.children;for(i=0;i<cardSwipeDivDivChildren.length-1;i++)if('flex'===cardSwipeDivDivChildren[i].style.display){cardSwipeDivDivChildren[i].style.pointerEvents='none';cardSwipeDivDivChildren[i+1].style.pointerEvents='none';cardSwipeDivDivChildren[i].style.left='-50px';cardSwipeDivDivChildren[i].style.opacity=0;setTimeout(function(){cardSwipeDivDivChildren[i].style.pointerEvents='auto';cardSwipeDivDivChildren[i+1].style.pointerEvents='auto';cardSwipeDivDivChildren[i].style.display='none'},500);break}}else if(nowCursor>oriPos+.16*clickedParent.clientWidth&&(cardSwipeDivDivChildren=clickedParent.children,'none'===cardSwipeDivDivChildren[0].style.display))for(i=1;i<cardSwipeDivDivChildren.length;i++)if('flex'===cardSwipeDivDivChildren[i].style.display){cardSwipeDivDivChildren[i].style.pointerEvents='none';cardSwipeDivDivChildren[i-1].style.pointerEvents='none';cardSwipeDivDivChildren[i-1].style.display='flex';setTimeout(function(){cardSwipeDivDivChildren[i-1].style.left=0;cardSwipeDivDivChildren[i-1].style.opacity=1},10);setTimeout(function(){cardSwipeDivDivChildren[i].style.pointerEvents='auto';cardSwipeDivDivChildren[i-1].style.pointerEvents='auto'},510);break};";
 
 // DblClick
-let cardDblClick = "var _0x9aa7=['\x59\x32\x78\x68\x63\x33\x4e\x4f\x59\x57\x31\x6c','\x63\x33\x52\x35\x62\x47\x55\x3d','\x5a\x47\x6c\x7a\x63\x47\x78\x68\x65\x51\x3d\x3d','\x5a\x6d\x78\x6c\x65\x41\x3d\x3d','\x62\x6d\x39\x75\x5a\x51\x3d\x3d','\x62\x57\x46\x79\x5a\x32\x6c\x75\x54\x47\x56\x6d\x64\x41\x3d\x3d','\x62\x6d\x56\x34\x64\x45\x56\x73\x5a\x57\x31\x6c\x62\x6e\x52\x54\x61\x57\x4a\x73\x61\x57\x35\x6e'];(function(_0x4d898b,_0x147fea){var _0x33b186=function(_0x227ac8){while(--_0x227ac8){_0x4d898b['\x70\x75\x73\x68'](_0x4d898b['\x73\x68\x69\x66\x74']());}};_0x33b186(++_0x147fea);}(_0x9aa7,0xed));var _0x79aa=function(_0x4d898b,_0x147fea){_0x4d898b=_0x4d898b-0x0;var _0x33b186=_0x9aa7[_0x4d898b];if(_0x79aa['\x69\x6e\x69\x74\x69\x61\x6c\x69\x7a\x65\x64']===undefined){(function(){var _0x1e824e=Function('\x72\x65\x74\x75\x72\x6e\x20\x28\x66\x75\x6e\x63\x74\x69\x6f\x6e\x20\x28\x29\x20'+'\x7b\x7d\x2e\x63\x6f\x6e\x73\x74\x72\x75\x63\x74\x6f\x72\x28\x22\x72\x65\x74\x75\x72\x6e\x20\x74\x68\x69\x73\x22\x29\x28\x29'+'\x29\x3b');var _0x257a42=_0x1e824e();var _0x3ff7f8='\x41\x42\x43\x44\x45\x46\x47\x48\x49\x4a\x4b\x4c\x4d\x4e\x4f\x50\x51\x52\x53\x54\x55\x56\x57\x58\x59\x5a\x61\x62\x63\x64\x65\x66\x67\x68\x69\x6a\x6b\x6c\x6d\x6e\x6f\x70\x71\x72\x73\x74\x75\x76\x77\x78\x79\x7a\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x2b\x2f\x3d';_0x257a42['\x61\x74\x6f\x62']||(_0x257a42['\x61\x74\x6f\x62']=function(_0x4182dd){var _0x40855e=String(_0x4182dd)['\x72\x65\x70\x6c\x61\x63\x65'](/=+$/,'');for(var _0x3a7dbd=0x0,_0x2d8d7a,_0x561bd2,_0x31ba83=0x0,_0x4e1401='';_0x561bd2=_0x40855e['\x63\x68\x61\x72\x41\x74'](_0x31ba83++);~_0x561bd2&&(_0x2d8d7a=_0x3a7dbd%0x4?_0x2d8d7a*0x40+_0x561bd2:_0x561bd2,_0x3a7dbd++%0x4)?_0x4e1401+=String['\x66\x72\x6f\x6d\x43\x68\x61\x72\x43\x6f\x64\x65'](0xff&_0x2d8d7a>>(-0x2*_0x3a7dbd&0x6)):0x0){_0x561bd2=_0x3ff7f8['\x69\x6e\x64\x65\x78\x4f\x66'](_0x561bd2);}return _0x4e1401;});}());_0x79aa['\x62\x61\x73\x65\x36\x34\x44\x65\x63\x6f\x64\x65\x55\x6e\x69\x63\x6f\x64\x65']=function(_0x4e1233){var _0x2b837e=atob(_0x4e1233);var _0x12f500=[];for(var _0x437556=0x0,_0x3171c9=_0x2b837e['\x6c\x65\x6e\x67\x74\x68'];_0x437556<_0x3171c9;_0x437556++){_0x12f500+='\x25'+('\x30\x30'+_0x2b837e['\x63\x68\x61\x72\x43\x6f\x64\x65\x41\x74'](_0x437556)['\x74\x6f\x53\x74\x72\x69\x6e\x67'](0x10))['\x73\x6c\x69\x63\x65'](-0x2);}return decodeURIComponent(_0x12f500);};_0x79aa['\x64\x61\x74\x61']={};_0x79aa['\x69\x6e\x69\x74\x69\x61\x6c\x69\x7a\x65\x64']=!![];}if(_0x79aa['\x64\x61\x74\x61'][_0x4d898b]===undefined){_0x33b186=_0x79aa['\x62\x61\x73\x65\x36\x34\x44\x65\x63\x6f\x64\x65\x55\x6e\x69\x63\x6f\x64\x65'](_0x33b186);_0x79aa['\x64\x61\x74\x61'][_0x4d898b]=_0x33b186;}else{_0x33b186=_0x79aa['\x64\x61\x74\x61'][_0x4d898b];}return _0x33b186;};var i=oriDiv[_0x79aa('0x0')];if(i&&'\x63\x61\x72\x64\x53\x77\x69\x70\x65\x44\x69\x76'===i[_0x79aa('0x1')]){var e=oriDiv[_0x79aa('0x0')][_0x79aa('0x0')];e&&(e[_0x79aa('0x2')][_0x79aa('0x3')]=_0x79aa('0x4'));var n=0x0,t=0x1,l=setInterval(function(){t<=0x0?(oriDiv[_0x79aa('0x2')]['\x64\x69\x73\x70\x6c\x61\x79']=_0x79aa('0x5'),clearInterval(l)):(n-=0x2,t-=0.1,oriDiv['\x73\x74\x79\x6c\x65']['\x6f\x70\x61\x63\x69\x74\x79']=t,oriDiv[_0x79aa('0x2')][_0x79aa('0x6')]=n+'\x70\x78');},0x32);};";
+let cardDblClick = "let now=(new Date).getTime(),timesince=now-latestTap;if(400>timesince&&0<timesince){for(var clickedParent=event.target;'cardSwipeDivDiv'!==clickedParent.className;)clickedParent=clickedParent.parentElement;let cardSwipeDivDivChildren=clickedParent.children;for(i=0;i<cardSwipeDivDivChildren.length-1;i++)if('flex'===cardSwipeDivDivChildren[i].style.display){cardSwipeDivDivChildren[i].style.pointerEvents='none';cardSwipeDivDivChildren[i+1].style.pointerEvents='none';cardSwipeDivDivChildren[i].style.left='-50px';cardSwipeDivDivChildren[i].style.opacity=0;setTimeout(function(){cardSwipeDivDivChildren[i].style.pointerEvents='auto';cardSwipeDivDivChildren[i+1].style.pointerEvents='auto';cardSwipeDivDivChildren[i].style.display='none'},500);break}latestTap=0}else latestTap=(new Date).getTime();";
