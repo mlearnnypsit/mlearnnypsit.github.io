@@ -1,12 +1,24 @@
 @font-face {
     font-family: "RobotoB";
-    src: url('RobotoFont/Roboto-Bold.ttf') format("truetype");
+    src: url("Fonts/RobotoFont/Roboto-Bold.ttf") format("truetype");
     font-display: block;
 }
 
 @font-face {
     font-family: "RobotoR";
-    src: url('RobotoFont/Roboto-Regular.ttf') format("truetype");
+    src: url("Fonts/RobotoFont/Roboto-Regular.ttf") format("truetype");
+    font-display: block;
+}
+
+@font-face {
+    font-family: "Baloo";
+    src: url("Fonts/BalooThambi-Regular.ttf") format("truetype");
+    font-display: block;
+}
+
+@font-face {
+    font-family: "Bowlby";
+    src: url("Fonts/BowlbyOneSC-Regular.ttf") format("truetype");
     font-display: block;
 }
 
@@ -19,7 +31,7 @@ html, body {
 body {
    min-height: 100%;
    font-size: 1.4em;
-   font-family: 'RobotoR', sans-serif;
+   font-family: "RobotoR", sans-serif;
 }
 
 p {
@@ -43,7 +55,7 @@ p {
    background: -o-radial-gradient(center, ellipse cover, rgba(143,143,143,0) 0%, rgba(36,36,36,0.4) 100%);
    background: -ms-radial-gradient(center, ellipse cover, rgba(143,143,143,0) 0%, rgba(36,36,36,0.4) 100%);
    background: radial-gradient(ellipse at center, rgba(143,143,143,0) 0%, rgba(36,36,36,0.4) 100%);
-   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#8f8f8f', endColorstr='#242424', GradientType=1 );
+   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#8f8f8f", endColorstr='#242424', GradientType=1 );
 }
 
 #page1TopDiv > div {
@@ -66,7 +78,7 @@ p {
 
 #page1TopDivTitle {
    font-size: 15vw;
-   font-family: 'RobotoB', sans-serif;
+   font-family: "RobotoB", sans-serif;
    width: 100%;
    text-shadow: 0 0.032em 0 #b0b0b0, 0px 0.15em 0.11em rgba(0,0,0,0.15), 0px 0.25em 0.021em rgba(0,0,0,0.1), 0px 0.32em 0.32em rgba(0,0,0,0.1);
    color: #fff;
@@ -111,7 +123,7 @@ p {
 
 .page1Title {
    padding: 24px;
-   background-color: rgba(255, 245, 157, .5);
+   background-color: rgba(163, 241, 160, .5);
 }
 
 #page1BottomDivTitle, #page1BottomDivWhyTitle {
@@ -205,7 +217,7 @@ p {
    display: flex;
    align-items: center;
    justify-content: center;
-   font-family: 'RobotoB', sans-serif;
+   font-family: "RobotoB", sans-serif;
 }
 
 #page2TopBarDivTitle > p {
@@ -220,9 +232,6 @@ p {
    margin-top: 50px;
 }
 
-#page2BottomLeftDiv {
-}
-
 #page2BottomLeftDivLeftDiv {
    height: 0;
    overflow: hidden;
@@ -233,13 +242,14 @@ p {
 }
 
 #page2BottomLeftDivLeftDiv.expand {
-   height: 200px;
+   height: 250px;
 }
 
 #templateMainDiv {
    width: 100%;
    height: 100%;
    display: flex;
+   flex-direction: row;
    overflow: hidden;
    overflow-x: auto;
 }
@@ -252,12 +262,54 @@ p {
    padding: 24px;
 }
 
+#templateMainDivLeft {
+   flex-grow: 1;
+}
+
+.templateSelectionLabelDiv {
+   width: 100%;
+   height: 50px;
+   background-color: rgb(255,186,200);
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   border-bottom: 1px solid rgb(255, 180, 191);
+   cursor: pointer;
+}
+
+.templateSelectionLabelDiv:hover{
+   opacity: 0.9;
+}
+
+.templateSelectionLabelDiv:active {
+   box-shadow: 0 0 12px rgb(233,162,173);
+}
+
+.templateSelectionLabelDiv.active {
+   background-color: rgb(255,212,223);
+   cursor: default;
+}
+
+#templateMainDivRight {
+   width: 0;
+   overflow: hidden;
+   transition-property: width;
+   transition-duration: 0.5s;
+   transition-timing-function: ease-in-out;
+   overflow-y: auto;
+}
+
+#templateMainDivRight.expand {
+   width: 50%;
+}
+
 .templateDivs > * {
    cursor: pointer;
 }
 
 .templateDivs > img {
-   width: 200px;
+   max-width: 90%;
+   max-height: 90%;
    padding: .25rem;
    background-color: #fff;
    border: 1px solid #dee2e6;
@@ -269,7 +321,7 @@ p {
    height: 100%;
    background-color: rgb(42, 42, 46);
    color: white;
-   font-family: 'RobotoR';
+   font-family: "RobotoR";
    overflow-y: auto;
 }
 
@@ -306,17 +358,12 @@ p {
    height: 100%;
    font-size: 1.5rem;
    color: white;
+   border-width:0;
 }
 
 #page2BottomLeftDivRightDiv > .clearSpace {
    flex-grow: 1;
    margin: 0;
-}
-
-#page2BottomLeftDivRightDiv > hr {
-   margin: 0;
-   height: 1px;
-   background-color: rgb(122,122,122);
 }
 
 #page2BottomRightDiv {
@@ -369,12 +416,92 @@ p {
 #page3 {
    display: none;
    z-index: 1;
-   background-color: rgb(204, 10, 10);
-   height: 100%;
    width: 100%;
+   height: 100%;
+   flex-direction: column;
 }
 
-[contentEditable='true'] {
+#page3TopDiv {
+   width: 100%;
+   height: 40%;
+   min-height: 200px;
+   background-color: rgb(255,253,159);
+   font-family: "Bowlby";
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+}
+
+#page3BottomDiv {
+   flex-grow: 1;
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+}
+
+#page3BottomDivNavigationDiv {
+   display: flex;
+   flex-direction: row;
+   flex-grow: 1;width: 100%;
+   justify-content: center;
+   align-items: center;
+}
+
+#page3BottomDivNavigationDiv .page3CircleDiv {
+   margin: 24px;
+}
+
+.page3CircleDiv {
+   user-select: none;
+}
+
+.page3CircleDiv:hover > .page3Circle {
+   background-color: rgb(254, 204, 101);
+}
+
+.page3CircleDiv:active > .page3Circle {
+   box-shadow: 0 0 12px rgb(254, 226, 169);
+}
+
+.page3Circle {
+   width: 80px;
+   height: 80px;
+   border-radius: 100%;
+   background-color: rgb(254, 220, 148);
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   color: white;
+   font-size: 32px;
+   cursor: pointer;
+   margin: auto;
+}
+
+.page3Circle ~ p {
+   font-family: "Baloo";
+   text-align: center;
+   color: white;
+   margin-top: 6px !important;
+}
+
+#page2OutputModalDiv .modal-body {
+   text-align: right;
+}
+
+#page2OutputTextarea {
+   height: 150px;
+   margin-bottom: 6px;
+}
+
+/* The Copied to clipboard confirmation... lazy write class/id */
+#page2OutputTextarea ~ p {
+   color: red;
+   display: none;
+}
+
+[contentEditable="true"] {
    cursor: auto;
 }
 
@@ -477,7 +604,7 @@ p {
 	flex-direction: column;
 	user-select: none;
    border-radius: 5px;
-   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+   box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
 	transition-property: left, opacity, box-shadow;
 	transition-duration: 0.5s;
 	transition-timing-function: ease-in-out;
@@ -524,6 +651,7 @@ p {
    width: 300px;
    max-width: 500px;
    height: 200px;
+   perspective: 1000px;
 }
 
 .cardFlipDivDiv {
@@ -531,6 +659,8 @@ p {
    width: 100%;
    height: 100%;
    text-align: center;
+   transition: transform 0.8s;
+   transform-style: preserve-3d;
    border: 1px solid rgba(155, 155, 155, 0.5);
 }
 
@@ -546,6 +676,8 @@ p {
 }
 
 .cardFlipFront {
+   width: 100%;
+   height: 100%;
    font-weight: bold;
    font-size: 20px;
    background-color: ghostwhite;
@@ -569,13 +701,16 @@ p {
    background-color: dodgerblue;
    color: white;
    padding: 24px;
-   font-size: 16px;
    font-weight: bold;
+}
+
+.cardFlipBack > p {
+	font-size: 15px;
 }
 
 .cardFlipBack > * {
    max-height: 100%;
-   max-width: 100%;
+   margin-bottom: 0 !important;
 }
 
 /* Checklist */
@@ -699,10 +834,14 @@ p {
    align-items: center;
    justify-content: center;
    width: auto;
+   flex-grow: 1;
    padding: 0 24px;
    height: 50px;
    border-radius: 4px 4px 0 0;
-   background-color: rgba(233,233,221,0.2);
+   background-color: rgb(245,245,245);
+   font-weight: bold;
+   border: 1px solid #ccc;
+   z-index: 1;
    cursor: pointer;
    -webkit-user-select: none;
    -moz-user-select: none;
@@ -710,16 +849,22 @@ p {
    user-select: none;
 }
 
-.tabComponentLinks:hover {
-   background-color: rgba(233,233,221,0.6);
+.tabComponentLinks:hover:not(.tabComponentLinksClear) {
+   background-color: rgb(239,239,239);
 }
 
 .tabComponentLinks.tabComponentActive {
-   background-color: #ccc;
+   background-color: white;
+   border-bottom: 1px solid white;
+   color: rgb(107, 91, 149);
+}
+
+.tabComponentLinks.tabComponentLinksClear {
+   cursor: auto;
 }
 
 .tabComponentLinks.tabComponentActive:hover {
-   background-color: rgba(100,100,100,0.3);
+   background-color: rgb(252,252,252);
 }
 
 .tabComponentContentDiv {
@@ -727,6 +872,8 @@ p {
    width: calc(100% - 2px);
    margin: 0;
    border: 1px solid #ccc;
+   border-top-width: 0;
+   box-shadow: 4px 4px 12px rgba(23,23,23,0.2);
 }
 
 .tabComponentContentDiv > .tabComponentContent:first-child {
@@ -736,11 +883,13 @@ p {
 .tabComponentContent {
    display: none !important;
    padding: 24px;
+   background-color: white;
 }
 
 .tabComponentContent.tabActiveContent {
    display: block !important;
 }
+
 
 /* Custom numbers */
 .fancyNumbers {
@@ -802,6 +951,12 @@ p {
    .cardFlipBack {
       font-size: 25px;
    }
+
+   .page3Circle {
+      width: 18.825vw;
+      height: 18.825vw;
+      font-size: 7.5294vw;
+   }
 }
 
 @media only screen and (min-width: 768px) {
@@ -845,7 +1000,7 @@ p {
       transition-timing-function: ease-in-out;
    }
    #page2BottomLeftDivLeftDiv.expand {
-      width: 250px;
+      width: 200px;
       height: 100%;
    }
 
@@ -857,10 +1012,19 @@ p {
    }
 
    .templateDivs {
-      margin: 72px 0;
+      margin: 24px 0;
    }
 
    .templateDivs > img {
+      max-width: 100%;
+   }
+
+   #templateMainDivLeft {
+      flex-grow: 0;
+   }
+
+   #templateMainDivRight.expand {
+      flex-grow: 1;
       width: 100%;
    }
 
@@ -882,6 +1046,16 @@ p {
       margin: 5px 0;
    }
 
+   .page3Circle {
+      width: 145px;
+      height: 145px;
+      font-size: 58px;
+   }
+
+   #page3BottomDivNavigationDiv .page3CircleDiv {
+      margin: 36px;
+   }
+
    #cardIndicatorDiv {
       flex-direction: row;
    }
@@ -898,7 +1072,7 @@ p {
       font-size: 24px;
    }
 
-   .cardFlipBack {
-      font-size: 30px;
-   }
+   .cardFlipBack > p {
+		font-size: 16px !important;
+	}
 }
