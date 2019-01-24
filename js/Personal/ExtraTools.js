@@ -496,13 +496,13 @@ function showRightTemplate(labelDiv, index) {
       switch (index) {
          case 0:
             obj = {
-               src: "images/Accordion.png",
+               src: "images/InteractiveComponent/Accordion.png",
                alt: "Accordion Template",
                onclick: "loadAccordionPreset()",
                text: "Accordion"
             };
             obj2 = {
-               src: "images/AccordionAlt.png",
+               src: "images/InteractiveComponent/AccordionAlt.png",
                alt: "Accordion Alternate Template",
                onclick: "loadAccordionAltPreset()",
                text: "Accordion (Alt)"
@@ -512,13 +512,13 @@ function showRightTemplate(labelDiv, index) {
             break;
          case 1:
             obj = {
-               src: "images/Card.png",
+               src: "images/InteractiveComponent/Card.png",
                alt: "Card Template",
                onclick: "loadCardPreset()",
                text: "Card"
             };
             obj2 = {
-               src: "images/FlashCard.png",
+               src: "images/InteractiveComponent/FlashCard.png",
                alt: "Flashcard Template",
                onclick: "loadFlashCardPreset()",
                text: "Flash Card"
@@ -528,7 +528,7 @@ function showRightTemplate(labelDiv, index) {
             break;
          case 2:
             obj = {
-               src: "images/Checklist.png",
+               src: "images/InteractiveComponent/Checklist.png",
                alt: "Checklist Template",
                onclick: "loadChecklistPreset()",
                text: "Checklist"
@@ -537,7 +537,7 @@ function showRightTemplate(labelDiv, index) {
             break;
          case 3:
             obj = {
-               src: "images/Tabs.png",
+               src: "images/InteractiveComponent/Tabs.png",
                alt: "Tabs Template",
                onclick: "loadTabsPreset()",
                text: "Tabs"
@@ -546,7 +546,7 @@ function showRightTemplate(labelDiv, index) {
             break;
          case 4:
             obj = {
-               src: "images/NumberList.png",
+               src: "images/InteractiveComponent/NumberList.png",
                alt: "Lists Template",
                onclick: "loadNumberListPreset()",
                text: "Lists"

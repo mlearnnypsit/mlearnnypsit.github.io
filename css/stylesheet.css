@@ -571,11 +571,21 @@ textarea {
    display: flex;
    flex-direction: column;
 }
+
 #instructionPageTitle {
    flex-basis: 10%;
+   min-height: 50px;
    font-size: 18px;
    font-weight: bold;
    display: flex;
+   align-items: center;
+   justify-content: center
+}
+
+#instructionPageTitle > p {
+   width: 100%;
+   text-align: center;
+   margin: 0;
 }
 
 #instructionPageContent {
@@ -586,17 +596,29 @@ textarea {
 
 #instructionPageButtonDiv {
    flex-basis: 20%;
+   min-height: 20px;
+   padding: 0 24px;
+   text-align: center;
+}
+
+#instructionPageButtonDiv > button {
+   margin: 6px 12px;
 }
 
 .instructionPageContentContents {
    display: none;
    height: 100%;
    background-color: rgba(255,230,3,0.4);
+   padding: 24px;
 }
 
-.instructionPageContentContents > img {
+.instructionPageContentContents > div {
+   text-align: center;
+}
+
+.instructionPageContentContents > div > img {
    max-width: 100%;
-   max-height: 100%;
+   max-height: 50vh;
 }
 
 @media only screen and (min-width:0px) and (max-width:736px) {
