@@ -492,6 +492,7 @@ textarea {
    overflow: auto;
    height: auto !important;
    max-height: 150px;
+   min-height: 40px;
 }
 
 .dropdown-itemed {
