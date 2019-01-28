@@ -35,7 +35,7 @@ let n = 0,
    isAnimating = !1;
 let rotateBox;
 // Tooltip expand
-let elementsToLoop = ["doubleClickAccordionHelp", "doubleClickFlashCardHelp", "doubleClickTabHelp", "changeColourHelp"];
+let elementsToLoop = ["doubleClickAccordionHelp", "doubleClickTabHelp", "changeColourHelp"];
 
 $(function () {
    // Random generator for checklist
@@ -700,6 +700,9 @@ function tooltipCheck(notExpanding) {
             $("#completedHelp")[0].className = "tooltips expand";
          }
          for(i=0;i<elementsToLoop.length;i++) {
+            if("doubleClickTabHelp" === elementsToLoop[i]) {
+               continue;
+            }
             let elementId = "#" + elementsToLoop[i];
             if ($(elementId).html()) {
                let leftStr = $(elementId).css("left");

@@ -616,8 +616,7 @@ p {
 }
 
 #removeCheckboxSelectHelp {
-   top: 400px;
-   left: calc(50% - 88px);
+   position: relative;
 }
 
 #doubleClickTabHelp {
@@ -1278,11 +1277,6 @@ p {
       left: calc((100% - 50px) * 0.5 - 42px)
    }
 
-   #removeSelectAccordionHelp {
-      top: 510px;
-      left: calc((100% - 50px) * 0.5 - 42px);
-   }
-
    #viewNextHelp {
       left: unset;
       bottom: unset;
@@ -1303,19 +1297,9 @@ p {
       margin-left: 24px;
    }
 
-   #removeCheckboxSelectHelp {
-      top: 350px;
-      left: calc((100% - 50px) * 0.5 - 88px);
-   }
-
    #doubleClickTabHelp {
       top: 130px;
       left: calc((100% - 50px) * 0.9 - 88px);
-   }
-
-   #removeTabSelectHelp {
-      top: 200px;
-      left: calc((100% - 50px) * 0.5 - 70px);
    }
 
    #changeColourHelp {
@@ -1325,11 +1309,6 @@ p {
 
    #changeColourHelp .tooltiptext::after {
       left: 20%;
-   }
-
-   #removeListSelectHelp {
-      top: 260px;
-      left: calc((100% - 50px) * 0.5 - 70px);
    }
 
    #addNewSectionHelp.expand {
