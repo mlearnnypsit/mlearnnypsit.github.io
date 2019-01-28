@@ -135,6 +135,13 @@ $(function () {
       removeSection();
    });
 
+   // Animate Ghost
+   $(document).on("click", "#hiddenCodesButton", function () {
+      setTimeout(function() {
+         $("#hiddenCodesButton > :first-child").effect("shake", {distance: 6, times: 5});
+      }, 1000);
+   });
+
    $(document).on("click", "#templateSelectionButton", function () {
       if (!isAnimating) {
          showTemplates();
@@ -227,16 +234,19 @@ function addTooltip(textContent, btnText, destinationID, b) {
    document.getElementById(destinationID).appendChild(tooltip);
 }
 
-function animatePage1Out() {
+function animatePage1Out(show) {
    document.body.scrollTop = 0;
    document.documentElement.scrollTop = 0;
    $("body").css("overflow", "hidden");
 
    // Add in first tooltip
-   if (!localStorage.helpNeverSee && void 0 == $("#selectTemplateHelp").html()) {
+   if (void 0 == $("#selectTemplateHelp").html() && show) {
       setTimeout(function () {
          addTooltip("Select the component you want", "selectTemplateHelp", "templateMainDivLeft", !1);
       }, 1000);
+   } else if(!show) {
+      // Back to normal
+      rotateDIV(document.getElementById("templateSelectionButton").children[0]);
    }
 
    // Show page2
@@ -361,7 +371,7 @@ function createNewButton() {
       activeTemplateSelectionLabelDiv.className = "templateSelectionLabelDiv";
    }
    document.getElementById("templateMainDivRight").className = "";
-   animatePage1Out();
+   animatePage1Out(!0);
 
    let page2BottomLeftDivLeftDiv = document.getElementById("page2BottomLeftDivLeftDiv");
    document.getElementById("hiddenCodeTextarea").style.display = "none";
@@ -438,8 +448,7 @@ function loadImportedAccordion(tempDiv) {
    $("#page2TopBarDivTitle > p").text("Accordion");
    makeSortable();
    hideImportModal();
-   animatePage1Out();
-   removeHelp();
+   animatePage1Out(!1);
 }
 
 function loadImportedAccordionAlt(tempDiv) {
@@ -471,8 +480,7 @@ function loadImportedAccordionAlt(tempDiv) {
    $("#page2TopBarDivTitle > p").text("Accordion Alternate");
    makeSortable();
    hideImportModal();
-   animatePage1Out();
-   removeHelp();
+   animatePage1Out(!1);
 }
 
 function loadImportedCard(tempDiv) {
@@ -521,8 +529,7 @@ function loadImportedCard(tempDiv) {
    startupCard();
    setCardIndicator();
    hideImportModal();
-   animatePage1Out();
-   removeHelp();
+   animatePage1Out(!1);
 }
 
 function loadImportedFlashCardPreset(tempDiv) {
@@ -542,26 +549,23 @@ function loadImportedFlashCardPreset(tempDiv) {
    isAccordion = 4;
    $("#page2TopBarDivTitle > p").text("Card");
    hideImportModal();
-   animatePage1Out();
-   removeHelp();
+   animatePage1Out(!1);
 }
 
 function loadImportedChecklistPreset(tempDiv) {
    $("#componentsDiv").empty();
 
-   tempDiv.children().first()[0].contentEditable = "true";
-   tempDiv.find(".checkboxContainer").each(function () {
-      let checkboxContainerCheckmark = $(this).find(".checkboxContainerCheckmark");
-      checkboxContainerCheckmark[0].removeAttribute("for");
-      checkboxContainerCheckmark.contentEditable = "true";
+   tempDiv.children().first().children().first()[0].contentEditable = "true";
+   tempDiv.find(".checkboxContainerCheckmark").each(function () {
+      this.removeAttribute("for");
+      this.contentEditable = "true";
    });
 
    $("#componentsDiv").append(tempDiv.children().first());
    isAccordion = 5;
    $("#page2TopBarDivTitle > p").text("Checklist");
    hideImportModal();
-   animatePage1Out();
-   removeHelp();
+   animatePage1Out(!1);
 }
 
 function loadImportedTabsPreset(tempDiv) {
@@ -574,20 +578,19 @@ function loadImportedTabsPreset(tempDiv) {
       tabComponentLinks.contentEditable = "true";
       tabComponentLinks.setAttribute("onclick", "tabsDoubletap(this)");
    });
-   tempDiv.find(".tabComponentContentDiv").each(function () {
-      let tabComponentContentDiv = this;
-      tabComponentContentDiv.className = "tabComponentContentDiv";
-      tabComponentContentDiv.contentEditable = "true";
+   tempDiv.find(".tabComponentContent").each(function () {
+      let tabComponentContent = this;
+      tabComponentContent.className = "tabComponentContent";
+      tabComponentContent.contentEditable = "true";
    });
 
    tempDiv.find(".tabComponentLinks").eq(0)[0].className = "tabComponentLinks tabComponentActive";
-   tempDiv.find(".tabComponentContentDiv").eq(0)[0].className = "tabComponentContentDiv tabActiveContent";
+   tempDiv.find(".tabComponentContent").eq(0)[0].className = "tabComponentContent tabActiveContent";
    $("#componentsDiv").html(tempDiv.html());
    isAccordion = 6;
    $("#page2TopBarDivTitle > p").text("Tabs");
    hideImportModal();
-   animatePage1Out();
-   removeHelp();
+   animatePage1Out(!1);
 }
 
 function loadImportedNumberListPreset(tempDiv) {
@@ -603,8 +606,7 @@ function loadImportedNumberListPreset(tempDiv) {
    isAccordion = 7;
    $("#page2TopBarDivTitle > p").text("Tabs");
    hideImportModal();
-   animatePage1Out();
-   removeHelp();
+   animatePage1Out(!1);
 }
 
 function tooltipShowPositionCheck() {
@@ -1510,6 +1512,7 @@ function addNewTabs(labelText, labelText2) {
    tabComponentLinksP.appendChild(document.createTextNode(labelText));
    let tabComponentContent = document.createElement("div");
    tabComponentContent.className = "tabComponentContent";
+   tabComponentContent.contentEditable = "true";
    let tabComponentContentP = document.createElement("p");
    tabComponentContentP.appendChild(document.createTextNode(labelText2));
 
@@ -1565,12 +1568,14 @@ function toggleHiddenCodes() {
       } else {
          page2BottomLeftDivLeftDiv.className = "";
          tooltipCheck(!0);
+         rotateDIV(document.getElementById("templateSelectionButton").children[0]);
       }
    } else {
       document.getElementById("templateMainDiv").style.display = "none";
       document.getElementById("hiddenCodeTextarea").style.display = "flex";
       page2BottomLeftDivLeftDiv.className = "expand";
       tooltipCheck(!1);
+      rotateDIV(document.getElementById("templateSelectionButton").children[0]);
    }
    setHiddenHTML();
 }
