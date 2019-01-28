@@ -23,7 +23,6 @@ let cm;
 // Current template selected
 let isAccordion;
 // To track card current slide
-let cardCurrent;
 let cardCurrentIndex;
 // To track number list index
 let numberListIndex;
@@ -36,7 +35,7 @@ let n = 0,
    isAnimating = !1;
 let rotateBox;
 // Tooltip expand
-let elementsToLoop = ["removeCheckboxSelectHelp", "changeColourHelp"];
+let elementsToLoop = ["doubleClickAccordionHelp", "doubleClickFlashCardHelp", "doubleClickTabHelp", "changeColourHelp"];
 
 $(function () {
    // Random generator for checklist
@@ -70,7 +69,8 @@ $(function () {
             if ($("#removeSelectAccordionHelp").html()) {
                $("#removeSelectAccordionHelp").remove();
                setTimeout(function () {
-                  addTooltip("Click on the Trash to remove accordion", "removeHelp", "page2BottomRightDiv", !1);
+                  addTooltip("Click on the Trash to remove accordion", "removeHelp", "page2BottomLeftDiv", !1);
+                  tooltipShowPositionCheck();
                }, 500);
             }
             selectedAccordionForDeletion = nodeYouWant;
@@ -79,7 +79,7 @@ $(function () {
             if ($("#removeSelectFlashCardHelp").html()) {
                $("#removeSelectFlashCardHelp").remove();
                setTimeout(function () {
-                  addTooltip("Click on the Trash to remove checkbox", "removeHelp", "page2BottomRightDiv", !1);
+                  addTooltip("Click on the Trash to remove checkbox", "removeHelp", "page2BottomLeftDiv", !1);
                   tooltipShowPositionCheck();
                }, 500);
             }
@@ -89,7 +89,7 @@ $(function () {
             if ($("#removeCheckboxSelectHelp").html()) {
                $("#removeCheckboxSelectHelp").remove();
                setTimeout(function () {
-                  addTooltip("Click on the Trash to remove checkbox", "removeHelp", "page2BottomRightDiv", !1);
+                  addTooltip("Click on the Trash to remove checkbox", "removeHelp", "page2BottomLeftDiv", !1);
                   tooltipShowPositionCheck();
                }, 500);
             }
@@ -99,17 +99,17 @@ $(function () {
             if ($("#removeTabSelectHelp").html()) {
                $("#removeTabSelectHelp").remove();
                setTimeout(function () {
-                  addTooltip("Click on the Trash to remove Tab", "removeHelp", "page2BottomRightDiv", !1);
+                  addTooltip("Click on the Trash to remove Tab", "removeHelp", "page2BottomLeftDiv", !1);
                   tooltipShowPositionCheck();
                }, 500);
             }
             selectedTabForDeletion = Array.prototype.indexOf.call(nodeYouWant.parentElement.children, nodeYouWant);
             break;
          } else if (nodeYouWant.className === "fancyNumbers") {
-            if ($("#removeCheckboxSelectHelp").html()) {
-               $("#removeCheckboxSelectHelp").remove();
+            if ($("#removeListSelectHelp").html()) {
+               $("#removeListSelectHelp").remove();
                setTimeout(function () {
-                  addTooltip("Click on the Trash to remove Checkbox", "removeHelp", "page2BottomRightDiv", !1);
+                  addTooltip("Click on the Trash to remove Checkbox", "removeHelp", "page2BottomLeftDiv", !1);
                   tooltipShowPositionCheck();
                }, 500);
             }
@@ -439,6 +439,7 @@ function loadImportedAccordion(tempDiv) {
    makeSortable();
    hideImportModal();
    animatePage1Out();
+   removeHelp();
 }
 
 function loadImportedAccordionAlt(tempDiv) {
@@ -471,6 +472,7 @@ function loadImportedAccordionAlt(tempDiv) {
    makeSortable();
    hideImportModal();
    animatePage1Out();
+   removeHelp();
 }
 
 function loadImportedCard(tempDiv) {
@@ -520,6 +522,7 @@ function loadImportedCard(tempDiv) {
    setCardIndicator();
    hideImportModal();
    animatePage1Out();
+   removeHelp();
 }
 
 function loadImportedFlashCardPreset(tempDiv) {
@@ -540,6 +543,7 @@ function loadImportedFlashCardPreset(tempDiv) {
    $("#page2TopBarDivTitle > p").text("Card");
    hideImportModal();
    animatePage1Out();
+   removeHelp();
 }
 
 function loadImportedChecklistPreset(tempDiv) {
@@ -557,6 +561,7 @@ function loadImportedChecklistPreset(tempDiv) {
    $("#page2TopBarDivTitle > p").text("Checklist");
    hideImportModal();
    animatePage1Out();
+   removeHelp();
 }
 
 function loadImportedTabsPreset(tempDiv) {
@@ -582,6 +587,7 @@ function loadImportedTabsPreset(tempDiv) {
    $("#page2TopBarDivTitle > p").text("Tabs");
    hideImportModal();
    animatePage1Out();
+   removeHelp();
 }
 
 function loadImportedNumberListPreset(tempDiv) {
@@ -598,6 +604,7 @@ function loadImportedNumberListPreset(tempDiv) {
    $("#page2TopBarDivTitle > p").text("Tabs");
    hideImportModal();
    animatePage1Out();
+   removeHelp();
 }
 
 function tooltipShowPositionCheck() {
@@ -607,50 +614,96 @@ function tooltipShowPositionCheck() {
 }
 
 function tooltipCheck(notExpanding) {
-   if(notExpanding) {
-      if ($("#selectTemplateHelp").html() || $("#selectTemplateRightHelp").html()) {
-         $("#selectTemplateHelp").fadeOut();
-         $("#selectTemplateRightHelp").fadeOut();
-      }
-      // Add and remove section add expand
-      if ($("#addNewSectionHelp").html()) {
-         $("#addNewSectionHelp")[0].className = "tooltips";
-      }
-      if ($("#removeHelp").html()) {
-         $("#removeHelp")[0].className = "tooltips";
-      }
-      if ($("#completedHelp").html()) {
-         $("#completedHelp")[0].className = "tooltips";
-      }
-      for(i=0;i<elementsToLoop.length;i++) {
-         let elementId = "#" + elementsToLoop[i];
-         if ($(elementId).html()) {
-            let leftStr = $(elementId).css("left");
-            leftStr = parseInt(leftStr.substring(0,leftStr.length-2)) - 200;
-            $(elementId).css("left", leftStr+"px");
+   if($(window).width() < 768) {
+      if(notExpanding) {
+         if ($("#selectTemplateHelp").html() || $("#selectTemplateRightHelp").html()) {
+            $("#selectTemplateHelp").fadeOut();
+            $("#selectTemplateRightHelp").fadeOut();
+         }
+         // Add and remove section add expand
+         if ($("#addNewSectionHelp").html()) {
+            $("#addNewSectionHelp")[0].className = "tooltips";
+         }
+         if ($("#removeHelp").html()) {
+            $("#removeHelp")[0].className = "tooltips";
+         }
+         if ($("#completedHelp").html()) {
+            $("#completedHelp")[0].className = "tooltips";
+         }
+         for(i=0;i<elementsToLoop.length;i++) {
+            let elementId = "#" + elementsToLoop[i];
+            if ($(elementId).html()) {
+               $(elementId).css("top", "");
+            }
+         }
+      } else {
+         if ($("#selectTemplateHelp").html() || $("#selectTemplateRightHelp").html()) {
+            $("#selectTemplateHelp").fadeIn();
+            $("#selectTemplateRightHelp").fadeIn();
+         }
+         // Add and remove section add expand
+         if ($("#addNewSectionHelp").html()) {
+            $("#addNewSectionHelp")[0].className = "tooltips expand";
+         }
+         if ($("#removeHelp").html()) {
+            $("#removeHelp")[0].className = "tooltips expand";
+         }
+         if ($("#completedHelp").html()) {
+            $("#completedHelp")[0].className = "tooltips expand";
+         }
+         for(i=0;i<elementsToLoop.length;i++) {
+            let elementId = "#" + elementsToLoop[i];
+            if ($(elementId).html()) {
+               let leftStr = $(elementId).css("top");
+               leftStr = parseInt(leftStr.substring(0,leftStr.length-2)) + 250;
+               $(elementId).css("top", leftStr+"px");
+            }
          }
       }
-   } else {
-      if ($("#selectTemplateHelp").html() || $("#selectTemplateRightHelp").html()) {
-         $("#selectTemplateHelp").fadeIn();
-         $("#selectTemplateRightHelp").fadeIn();
-      }
-      // Add and remove section add expand
-      if ($("#addNewSectionHelp").html()) {
-         $("#addNewSectionHelp")[0].className = "tooltips expand";
-      }
-      if ($("#removeHelp").html()) {
-         $("#removeHelp")[0].className = "tooltips expand";
-      }
-      if ($("#completedHelp").html()) {
-         $("#completedHelp")[0].className = "tooltips expand";
-      }
-      for(i=0;i<elementsToLoop.length;i++) {
-         let elementId = "#" + elementsToLoop[i];
-         if ($(elementId).html()) {
-            let leftStr = $(elementId).css("left");
-            leftStr = parseInt(leftStr.substring(0,leftStr.length-2)) + 200;
-            $(elementId).css("left", leftStr+"px");
+   }else {
+      if(notExpanding) {
+         if ($("#selectTemplateHelp").html() || $("#selectTemplateRightHelp").html()) {
+            $("#selectTemplateHelp").fadeOut();
+            $("#selectTemplateRightHelp").fadeOut();
+         }
+         // Add and remove section add expand
+         if ($("#addNewSectionHelp").html()) {
+            $("#addNewSectionHelp")[0].className = "tooltips";
+         }
+         if ($("#removeHelp").html()) {
+            $("#removeHelp")[0].className = "tooltips";
+         }
+         if ($("#completedHelp").html()) {
+            $("#completedHelp")[0].className = "tooltips";
+         }
+         for(i=0;i<elementsToLoop.length;i++) {
+            let elementId = "#" + elementsToLoop[i];
+            if ($(elementId).html()) {
+               $(elementId).css("left", "");
+            }
+         }
+      } else {
+         if ($("#selectTemplateHelp").html() || $("#selectTemplateRightHelp").html()) {
+            $("#selectTemplateHelp").fadeIn();
+            $("#selectTemplateRightHelp").fadeIn();
+         }
+         // Add and remove section add expand
+         if ($("#addNewSectionHelp").html()) {
+            $("#addNewSectionHelp")[0].className = "tooltips expand";
+         }
+         if ($("#removeHelp").html()) {
+            $("#removeHelp")[0].className = "tooltips expand";
+         }
+         if ($("#completedHelp").html()) {
+            $("#completedHelp")[0].className = "tooltips expand";
+         }
+         for(i=0;i<elementsToLoop.length;i++) {
+            let elementId = "#" + elementsToLoop[i];
+            if ($(elementId).html()) {
+               let leftStr = $(elementId).css("left");
+               leftStr = parseInt(leftStr.substring(0,leftStr.length-2)) + 200;
+               $(elementId).css("left", leftStr+"px");
+            }
          }
       }
    }
@@ -919,7 +972,7 @@ function loadCardPreset() {
    let forwardBtn = document.createElement("button");
    forwardBtn.className = "btn btn-info";
    forwardBtn.id = "cardNextButton";
-   forwardBtn.setAttribute("onclick", "ifDblClicked(document.getElementsByClassName('cardSwipeDivDiv')[0])");
+   forwardBtn.setAttribute("onclick", "ofDblClicked2()");
    forwardBtn.appendChild(document.createTextNode("View Next Slide"));
 
    let totalCardChild = $(".cardAnimationDiv").children().length;
@@ -1189,36 +1242,37 @@ function removeSection() {
       break;
    case 2:
    case 3:
-      let cardSwipeDivDivChildren = cardCurrent.parentElement.children;
-      for (i = 0; i < cardSwipeDivDivChildren.length; i++) {
-         // Not first
-         if (cardSwipeDivDivChildren[i].style.display === "flex" && i >= 1) {
-            document.getElementById("cardBackButton").disabled = true;
-            document.getElementById("cardNextButton").disabled = true;
-            goLeft(document.getElementsByClassName("cardSwipeDivDiv")[0]);
-            setTimeout(function () {
-               cardCurrent.parentElement.removeChild(cardSwipeDivDivChildren[i]);
-               // Enable the Prev Slide Button
-               document.getElementById("cardBackButton").disabled = false;
-               document.getElementById("cardNextButton").disabled = false;
-               setCardIndicator();
-            }, 510);
-            cardCurrent = cardSwipeDivDivChildren[i - 1];
-            break;
-         } else if (cardSwipeDivDivChildren[i].style.display === "flex" && i === 0) {
-            document.getElementById("cardBackButton").disabled = true;
-            document.getElementById("cardNextButton").disabled = true;
-            cardCurrentIndex--;
-            ifDblClicked(document.getElementsByClassName("cardSwipeDivDiv")[0]);
-            setTimeout(function () {
-               cardCurrent.parentElement.removeChild(cardSwipeDivDivChildren[i]);
-               // Enable the Prev Slide Button
-               document.getElementById("cardBackButton").disabled = false;
-               document.getElementById("cardNextButton").disabled = false;
-               setCardIndicator();
-            }, 500);
-            cardCurrent = cardSwipeDivDivChildren[i + 1];
-            break;
+      let cardSwipeDivDivChildren = $(".cardSwipeDiv");
+      if(cardSwipeDivDivChildren.length > 1) {
+         for (i = 0; i < cardSwipeDivDivChildren.length; i++) {
+            // Not first
+            if (cardSwipeDivDivChildren.eq(i).css("display") === "flex" && i >= 1) {
+               document.getElementById("cardBackButton").disabled = true;
+               document.getElementById("cardNextButton").disabled = true;
+               goLeft(document.getElementsByClassName("cardSwipeDivDiv")[0]);
+               $(".cardSwipeDiv").eq(cardCurrentIndex)[0].style.left = 0;
+               setTimeout(function () {
+                  $(".cardSwipeDiv").eq(cardCurrentIndex + 1).remove();
+                  startupCard();
+                  // Enable the Prev Slide Button
+                  document.getElementById("cardBackButton").disabled = false;
+                  document.getElementById("cardNextButton").disabled = false;
+                  setCardIndicator();
+               }, 510);
+               break;
+            } else if (cardSwipeDivDivChildren.eq(i).css("display") === "flex" && i === 0) {
+               document.getElementById("cardBackButton").disabled = true;
+               document.getElementById("cardNextButton").disabled = true;
+               ifDblClicked(document.getElementsByClassName("cardSwipeDivDiv")[0]);
+               setTimeout(function () {
+                  $(".cardSwipeDiv").eq(cardCurrentIndex).remove();
+                  // Enable the Prev Slide Button
+                  document.getElementById("cardBackButton").disabled = false;
+                  document.getElementById("cardNextButton").disabled = false;
+                  setCardIndicator();
+               }, 500);
+               break;
+            }
          }
       }
       break;
@@ -1234,23 +1288,23 @@ function removeSection() {
       break;
    case 6:
       if (!isNaN(selectedTabForDeletion) && $(".tabComponentLinks:not(.tabComponentLinksClear)").length > 1) {
-         let tabComponent = document.getElementsByClassName("tabComponent")[0];
-         let tabComponentContentDiv = document.getElementsByClassName("tabComponentContentDiv")[0];
+         let tabComponent = $(".tabComponent");
+         let tabComponentContentDiv = $(".tabComponentContentDiv");
          try {
-            tabComponent.removeChild(tabComponent.childNodes[selectedTabForDeletion]);
-            tabComponentContentDiv.removeChild(tabComponentContentDiv.childNodes[selectedTabForDeletion]);
+            tabComponent.find(".tabComponentLinks").eq(selectedTabForDeletion).remove();
+            tabComponentContentDiv.find(".tabComponentContent").eq(selectedTabForDeletion).remove();
          } catch (e) {
             console.log(e.message);
          }
 
          // Open previous or next tab is no active
          let gotActive = !1;
-         $(tabComponent).children().each(function () {
+         tabComponent.find(".tabComponentLinks").each(function () {
             if (this.className === "tabComponentLinks tabComponentActive") {
                gotActive = !0;
             }
          });
-         $(tabComponentContentDiv).children().each(function () {
+         tabComponentContentDiv.find(".tabComponentContent").each(function () {
             if (this.className === "tabComponentContent tabActiveContent") {
                gotActive = !0;
             }
@@ -1261,8 +1315,8 @@ function removeSection() {
             }
          }
          if (!gotActive) {
-            tabComponent.children[selectedTabForDeletion].className = "tabComponentLinks tabComponentActive";
-            tabComponentContentDiv.children[selectedTabForDeletion].className = "tabComponentContent tabActiveContent";
+            tabComponent.children().eq(selectedTabForDeletion)[0].className = "tabComponentLinks tabComponentActive";
+            tabComponentContentDiv.children().eq(selectedTabForDeletion)[0].className = "tabComponentContent tabActiveContent";
          }
 
          if ($(".tabComponentLinks:not(.tabComponentLinksClear)").length <= 1) {
@@ -1366,7 +1420,7 @@ function addNewCard(labelText, labelText2) {
    }
    let cardSwipeDiv = document.createElement("div");
    cardSwipeDiv.className = "cardSwipeDiv";
-   cardSwipeDiv.setAttribute("ondblclick", "ifDblClicked(this)");
+   cardSwipeDiv.setAttribute("onclick", "ifDblClicked(this)");
    let cardAnimationDivTitle = document.createElement("p");
    cardAnimationDivTitle.contentEditable = "true";
    cardAnimationDivTitle.appendChild(document.createTextNode(labelText));
@@ -1381,10 +1435,6 @@ function addNewCard(labelText, labelText2) {
    cardSwipeDiv.appendChild(cardSwipeContent);
 
    contentEditableBr();
-
-   if (!cardCurrent) {
-      cardCurrent = cardSwipeDiv;
-   }
 
    return cardSwipeDiv;
 }
@@ -1460,7 +1510,6 @@ function addNewTabs(labelText, labelText2) {
    tabComponentLinksP.appendChild(document.createTextNode(labelText));
    let tabComponentContent = document.createElement("div");
    tabComponentContent.className = "tabComponentContent";
-   tabComponentContent.contentEditable = "true";
    let tabComponentContentP = document.createElement("p");
    tabComponentContentP.appendChild(document.createTextNode(labelText2));
 
@@ -1485,7 +1534,7 @@ function addNewNumberList(labelText) {
    fancyNumbersColorInput.type = "color";
    fancyNumbersColorInput.value = "#6600cc";
    fancyNumbersColorInput.className = "form-control";
-   fancyNumbersColorInput.setAttribute("onchange", "this.nextElementSibling.style.backgroundColor = this.value;$('#changeColourHelp').html()&&($('#changeColourHelp').remove(),setTimeout(function(){addTooltip('To remove the checkbox, click on the it','removeCheckboxSelectHelp','page2BottomRightDiv',!1);tooltipShowPositionCheck()},600));");
+   fancyNumbersColorInput.setAttribute("onchange", "this.nextElementSibling.style.backgroundColor = this.value;$('#changeColourHelp').html()&&($('#changeColourHelp').remove(),setTimeout(function(){addTooltip('To remove the checkbox, click on the it','removeListSelectHelp','page2BottomRightDiv',!1);tooltipShowPositionCheck()},600));");
    let fancyNumbersCircle = document.createElement("div");
    fancyNumbersCircle.className = "fancyNumbersCircle";
    fancyNumbersCircle.contentEditable = "true";
@@ -1515,11 +1564,13 @@ function toggleHiddenCodes() {
          document.getElementById("hiddenCodeTextarea").style.display = "flex";
       } else {
          page2BottomLeftDivLeftDiv.className = "";
+         tooltipCheck(!0);
       }
    } else {
       document.getElementById("templateMainDiv").style.display = "none";
       document.getElementById("hiddenCodeTextarea").style.display = "flex";
       page2BottomLeftDivLeftDiv.className = "expand";
+      tooltipCheck(!1);
    }
    setHiddenHTML();
 }
@@ -1903,7 +1954,6 @@ function goLeft(clickedParent) {
                document.getElementById("cardNextButton").disabled = false;
             }, 510);
 
-            cardCurrent = cardSwipeDivDivChildren[i - 1];
             cardCurrentIndex--;
             break;
          }
@@ -1913,28 +1963,63 @@ function goLeft(clickedParent) {
 }
 
 function ifDblClicked(clickedParent) {
-   while (clickedParent && clickedParent.className !== "cardSwipeDivDiv") {
-      clickedParent = clickedParent.parentElement;
+   let now = new Date().getTime();
+   let timesince = now - latestTap;
+   if ((timesince < 400) && (timesince > 0)) {
+      let cardSwipeDivDivChildren = $(".cardSwipeDivDiv > .cardSwipeDiv");
+      // Loop (-1 to prevent last)
+      for (i = 0; i < cardSwipeDivDivChildren.length - 1; i++) {
+         if (cardSwipeDivDivChildren.eq(i).css("display") === "flex") {
+            document.getElementById("cardBackButton").disabled = true;
+            document.getElementById("cardNextButton").disabled = true;
+            cardSwipeDivDivChildren.eq(i)[0].style.pointerEvents = "none";
+            cardSwipeDivDivChildren.eq(i + 1)[0].style.pointerEvents = "none";
+            cardSwipeDivDivChildren.eq(i)[0].style.left = "-50px";
+            cardSwipeDivDivChildren.eq(i)[0].style.opacity = 0;
+            setTimeout(function () {
+               cardSwipeDivDivChildren.eq(i)[0].style.pointerEvents = "auto";
+               cardSwipeDivDivChildren.eq(i + 1)[0].style.pointerEvents = "auto";
+               cardSwipeDivDivChildren.eq(i)[0].style.display = "none";
+               document.getElementById("cardBackButton").disabled = false;
+               document.getElementById("cardNextButton").disabled = false;
+            }, 500);
+            cardCurrentIndex++;
+            break;
+         }
+      }
+      setCardIndicator();
+      if ($("#viewNextHelp").html()) {
+         $("#viewNextHelp").remove();
+         setTimeout(function () {
+            addTooltip("Clicking on the Trash will remove the card on the current page", "removeHelp", "page2BottomRightDiv", !1);
+            tooltipShowPositionCheck();
+         }, 1500);
+      }
+      latestTap = 0;
+   } else {
+      latestTap = new Date().getTime();
    }
-   let cardSwipeDivDivChildren = clickedParent.children;
 
+}
+
+function ofDblClicked2() {
+   let cardSwipeDivDivChildren = $(".cardSwipeDivDiv > .cardSwipeDiv");
    // Loop (-1 to prevent last)
    for (i = 0; i < cardSwipeDivDivChildren.length - 1; i++) {
-      if (cardSwipeDivDivChildren[i].style.display === "flex") {
+      if (cardSwipeDivDivChildren.eq(i).css("display") === "flex") {
          document.getElementById("cardBackButton").disabled = true;
          document.getElementById("cardNextButton").disabled = true;
-         cardSwipeDivDivChildren[i].style.pointerEvents = "none";
-         cardSwipeDivDivChildren[i + 1].style.pointerEvents = "none";
-         cardSwipeDivDivChildren[i].style.left = "-50px";
-         cardSwipeDivDivChildren[i].style.opacity = 0;
+         cardSwipeDivDivChildren.eq(i)[0].style.pointerEvents = "none";
+         cardSwipeDivDivChildren.eq(i + 1)[0].style.pointerEvents = "none";
+         cardSwipeDivDivChildren.eq(i)[0].style.left = "-50px";
+         cardSwipeDivDivChildren.eq(i)[0].style.opacity = 0;
          setTimeout(function () {
-            cardSwipeDivDivChildren[i].style.pointerEvents = "auto";
-            cardSwipeDivDivChildren[i + 1].style.pointerEvents = "auto";
-            cardSwipeDivDivChildren[i].style.display = "none";
+            cardSwipeDivDivChildren.eq(i)[0].style.pointerEvents = "auto";
+            cardSwipeDivDivChildren.eq(i + 1)[0].style.pointerEvents = "auto";
+            cardSwipeDivDivChildren.eq(i)[0].style.display = "none";
             document.getElementById("cardBackButton").disabled = false;
             document.getElementById("cardNextButton").disabled = false;
          }, 500);
-         cardCurrent = cardSwipeDivDivChildren[i + 1];
          cardCurrentIndex++;
          break;
       }
@@ -1942,19 +2027,12 @@ function ifDblClicked(clickedParent) {
    setCardIndicator();
    if ($("#viewNextHelp").html()) {
       $("#viewNextHelp").remove();
-      if($(window).height() < 740) {
-         window.scroll({
-            top: 0,
-            left: 0,
-            behavior: 'smooth'
-         });
-      }
       setTimeout(function () {
          addTooltip("Clicking on the Trash will remove the card on the current page", "removeHelp", "page2BottomRightDiv", !1);
+         tooltipShowPositionCheck();
       }, 1500);
    }
 }
-
 // Number list function
 function getNumberListIndex() {
    numberListIndex = document.getElementsByClassName("fancyNumbers").length + 1;

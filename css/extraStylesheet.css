@@ -598,8 +598,7 @@ p {
 }
 
 #removeSelectAccordionHelp {
-   top: 560px;
-   left: calc(50% - 88px);
+   position: relative;
 }
 
 #doubleClickFlashCardHelp {
@@ -627,8 +626,7 @@ p {
 }
 
 #removeTabSelectHelp {
-   top: 300px;
-   left: calc((100% - 255px) * .5);
+   position: relative;
 }
 
 #changeColourHelp {
@@ -638,6 +636,10 @@ p {
 
 #changeColourHelp .tooltiptext::after {
    left: 20%;
+}
+
+#removeListSelectHelp {
+   position: relative;
 }
 
 .tooltips.expand {
@@ -1321,17 +1323,13 @@ p {
       left: 85px;
    }
 
-   #changeColourHelp.expand {
-      top: 260px !important;
-      left: 285px !important;
-   }
-
    #changeColourHelp .tooltiptext::after {
       left: 20%;
    }
 
-   #removeCheckboxSelectHelp {
-      top: 350px;
+   #removeListSelectHelp {
+      top: 260px;
+      left: calc((100% - 50px) * 0.5 - 70px);
    }
 
    #addNewSectionHelp.expand {
