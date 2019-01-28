@@ -567,7 +567,7 @@ function loadImportedTabsPreset(tempDiv) {
       tabComponentLinks.className = "tabComponentLinks";
       tabComponentLinks.removeAttribute("onclick");
       tabComponentLinks.contentEditable = "true";
-      tabComponentLinks.setAttribute("ondblclick", tabsOnClick);
+      tabComponentLinks.setAttribute("onclick", "tabsDoubletap(this)");
    });
    tempDiv.find(".tabComponentContentDiv").each(function () {
       let tabComponentContentDiv = this;
@@ -1558,6 +1558,7 @@ function setHiddenHTML() {
 // Output page2
 function page2Output() {
    if ($("#componentsDiv").html()) {
+      removeHelp();
       $("#page2OutputTextarea").val("");
       $("#tempDiv").empty();
       let componentsDiv = $("#componentsDiv").clone();
@@ -1963,8 +1964,7 @@ function getNumberListIndex() {
 let checklistStartup = "document.querySelectorAll('.checkboxContainer input').forEach(function(a){'true'===localStorage.getItem(a.id)&&(a.checked=!0)})";
 
 // Tabs functions
-// let tabsOnClick = "for(var elementIndex=Array.prototype.indexOf.call(this.parentNode.children,this),a=this.parentElement.nextElementSibling.children,b=0;b<a.length;b++)a[b].className=b===elementIndex?'tabComponentContent tabActiveContent':'tabComponentContent';for(var a$0=this.parentElement.children,b$1=0;b$1<a$0.length;b$1++)a$0[b$1].className='tabComponentLinks';this.className='tabComponentLinks'===this.className?'tabComponentLinks tabComponentActive':'tabComponentLinks'";
-let tabsOnClick = "var now=(new Date).getTime(),timesince=now-latestTap;if(400>timesince&&0<timesince){for(var elementIndex=Array.prototype.indexOf.call(element.parentNode.children,element),a=element.parentElement.nextElementSibling.children,b=0;b<a.length;b++)a[b].className=b===elementIndex?'tabComponentContent tabActiveContent':'tabComponentContent';for(var a$0=element.parentElement.children,b$1=0;b$1<a$0.length;b$1++)a$0[b$1].className='tabComponentLinks';element.className='tabComponentLinks'===element.className?'tabComponentLinks tabComponentActive':'tabComponentLinks';latestTap=0}else latestTap=(new Date).getTime();";
+let tabsOnClick = "for(var elementIndex=Array.prototype.indexOf.call(this.parentNode.children,this),a=this.parentElement.nextElementSibling.children,b=0;b<a.length;b++)a[b].className=b===elementIndex?'tabComponentContent tabActiveContent':'tabComponentContent';for(var a$0=this.parentElement.children,b$1=0;b$1<a$0.length;b$1++)a$0[b$1].className='tabComponentLinks';this.className='tabComponentLinks'===this.className?'tabComponentLinks tabComponentActive':'tabComponentLinks'";
 
 // Messy stuff
 // CardStartup script
