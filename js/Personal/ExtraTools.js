@@ -36,6 +36,8 @@ let n = 0,
 let rotateBox;
 // Tooltip expand
 let elementsToLoop = ["doubleClickAccordionHelp", "doubleClickTabHelp", "changeColourHelp"];
+// Function to convert rgb to hex so can set type=color
+let hexDigits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"];
 
 $(function () {
    // Random generator for checklist
@@ -136,16 +138,12 @@ $(function () {
    });
 
    // Animate Ghost
-   $(document).on("click", "#hiddenCodesButton", function () {
-      setTimeout(function() {
-         $("#hiddenCodesButton > :first-child").effect("shake", {distance: 6, times: 5});
-      }, 1000);
+   $(document).on("click", "#hiddenCodesButton", function (event) {
+      toggleHiddenCodes();
    });
 
    $(document).on("click", "#templateSelectionButton", function () {
-      if (!isAnimating) {
-         showTemplates();
-      }
+      showTemplates();
    })
 
    // Rotate first
@@ -241,6 +239,7 @@ function animatePage1Out(show) {
 
    // Add in first tooltip
    if (void 0 == $("#selectTemplateHelp").html() && show) {
+      removeHelp();
       setTimeout(function () {
          addTooltip("Select the component you want", "selectTemplateHelp", "templateMainDivLeft", !1);
       }, 1000);
@@ -394,24 +393,31 @@ function checkImportTextarea() {
    if (importedText) {
       let tempDiv = $('<div>').append($(importedText).clone());
       if (tempDiv.find(".accordion").html()) {
+         removeHelp();
          loadImportedAccordion(tempDiv);
          return !0;
       } else if (tempDiv.find(".accordionAlternate").html()) {
+         removeHelp();
          loadImportedAccordionAlt(tempDiv);
          return !0;
       } else if (tempDiv.find(".cardAnimationDiv").html()) {
+         removeHelp();
          loadImportedCard(tempDiv);
          return !0;
       } else if (tempDiv.find(".cardFlipMasterDiv").html()) {
+         removeHelp();
          loadImportedFlashCardPreset(tempDiv);
          return !0;
       } else if (tempDiv.find(".checkBoxPageDiv").html()) {
+         removeHelp();
          loadImportedChecklistPreset(tempDiv);
          return !0;
       } else if (tempDiv.find(".tabComponent").html()) {
+         removeHelp();
          loadImportedTabsPreset(tempDiv);
          return !0;
       } else if (tempDiv.find(".fancyNumbers").html()) {
+         removeHelp();
          loadImportedNumberListPreset(tempDiv);
          return !0;
       }
@@ -491,12 +497,12 @@ function loadImportedCard(tempDiv) {
       this.removeAttribute("onmouseup");
       this.removeAttribute("ontouchstart");
       this.removeAttribute("ontouchend");
-      this.setAttribute("ondblclick", "ifDblClicked(this)");
+      this.setAttribute("onclick", "ifDblClicked(this)");
 
       this.children[0].contentEditable = "true";
    });
 
-   $("#componentsDiv").append(tempDiv.children().first());
+   $("#componentsDiv").append(tempDiv.find(".cardAnimationDiv").eq(0)[0].outerHTML);
 
    // Div to contain the buttons
    let cardIndicatorDiv = document.createElement("div");
@@ -505,12 +511,12 @@ function loadImportedCard(tempDiv) {
    let backBtn = document.createElement("button");
    backBtn.className = "btn btn-info";
    backBtn.id = "cardBackButton";
-   backBtn.setAttribute("onclick", "goLeft(this.parentElement.previousElementSibling.children[0])");
+   backBtn.setAttribute("onclick", "goLeft(document.getElementsByClassName('cardSwipeDivDiv')[0])");
    backBtn.appendChild(document.createTextNode("View Previous Slide"));
    let forwardBtn = document.createElement("button");
    forwardBtn.className = "btn btn-info";
    forwardBtn.id = "cardNextButton";
-   forwardBtn.setAttribute("onclick", "ifDblClicked(this.parentElement.previousElementSibling.children[0])");
+   forwardBtn.setAttribute("onclick", "ifDblClicked2()");
    forwardBtn.appendChild(document.createTextNode("View Next Slide"));
 
    let totalCardChild = $(".cardAnimationDiv").children().length;
@@ -545,7 +551,7 @@ function loadImportedFlashCardPreset(tempDiv) {
       cardFlipBack.contentEditable = "true";
    });
 
-   $("#componentsDiv").append(tempDiv.children().first());
+   $("#componentsDiv").html(tempDiv.find(".cardFlipMasterDiv").eq(0)[0].outerHTML);
    isAccordion = 4;
    $("#page2TopBarDivTitle > p").text("Card");
    hideImportModal();
@@ -555,13 +561,13 @@ function loadImportedFlashCardPreset(tempDiv) {
 function loadImportedChecklistPreset(tempDiv) {
    $("#componentsDiv").empty();
 
-   tempDiv.children().first().children().first()[0].contentEditable = "true";
+   tempDiv.find(".checkBoxPageDiv").eq(0).children().first()[0].contentEditable = "true";
    tempDiv.find(".checkboxContainerCheckmark").each(function () {
       this.removeAttribute("for");
       this.contentEditable = "true";
    });
 
-   $("#componentsDiv").append(tempDiv.children().first());
+   $("#componentsDiv").html(tempDiv.find(".checkBoxPageDiv").eq(0)[0].outerHTML);
    isAccordion = 5;
    $("#page2TopBarDivTitle > p").text("Checklist");
    hideImportModal();
@@ -586,7 +592,9 @@ function loadImportedTabsPreset(tempDiv) {
 
    tempDiv.find(".tabComponentLinks").eq(0)[0].className = "tabComponentLinks tabComponentActive";
    tempDiv.find(".tabComponentContent").eq(0)[0].className = "tabComponentContent tabActiveContent";
-   $("#componentsDiv").html(tempDiv.html());
+   let tabComponent = tempDiv.find(".tabComponent").eq(0)[0].outerHTML;
+   let tabComponentContentDiv = tempDiv.find(".tabComponentContentDiv").eq(0)[0].outerHTML;
+   $("#componentsDiv").html(tabComponent + tabComponentContentDiv);
    isAccordion = 6;
    $("#page2TopBarDivTitle > p").text("Tabs");
    hideImportModal();
@@ -598,11 +606,19 @@ function loadImportedNumberListPreset(tempDiv) {
 
    tempDiv.find(".fancyNumbers").each(function () {
       let fancyNumbers = $(this);
-      fancyNumbers.find(".fancyNumbersCircle")[0].contentEditable = "true";
+      let fancyNumbersCircle = fancyNumbers.find(".fancyNumbersCircle").eq(0);
+      fancyNumbersCircle[0].contentEditable = "true";
       fancyNumbers.find(".fancyNumbersCircle ~ *")[0].contentEditable = "true";
+      let fancyNumbersColorInput = document.createElement("input");
+      fancyNumbersColorInput.type = "color";
+      fancyNumbersColorInput.className = "form-control";
+      fancyNumbersColorInput.setAttribute("onchange", "this.nextElementSibling.style.backgroundColor = this.value;$('#changeColourHelp').html()&&($('#changeColourHelp').remove(),setTimeout(function(){addTooltip('To remove the checkbox, click on the it','removeListSelectHelp','page2BottomRightDiv',!1);tooltipShowPositionCheck()},600));");
+      fancyNumbers.prepend(fancyNumbersColorInput);
+
+      $("#componentsDiv").append(fancyNumbers);
+      fancyNumbersColorInput.value = rgb2hex(fancyNumbersCircle.css("background-color"));
    });
 
-   $("#componentsDiv").html(tempDiv.html());
    isAccordion = 7;
    $("#page2TopBarDivTitle > p").text("Tabs");
    hideImportModal();
@@ -715,22 +731,24 @@ function tooltipCheck(notExpanding) {
 }
 
 function showTemplates() {
-   let page2BottomLeftDivLeftDiv = document.getElementById("page2BottomLeftDivLeftDiv");
-   if ($(page2BottomLeftDivLeftDiv).hasClass("expand")) {
-      if (document.getElementById("templateMainDiv").style.display === "none") {
+   if(!isAnimating) {
+      let page2BottomLeftDivLeftDiv = document.getElementById("page2BottomLeftDivLeftDiv");
+      if ($(page2BottomLeftDivLeftDiv).hasClass("expand")) {
+         if (document.getElementById("templateMainDiv").style.display === "none") {
+            document.getElementById("hiddenCodeTextarea").style.display = "none";
+            document.getElementById("templateMainDiv").style.display = "flex";
+         } else {
+            page2BottomLeftDivLeftDiv.className = "";
+            tooltipCheck(!0);
+            rotateDIV(document.getElementById("templateSelectionButton").children[0]);
+         }
+      } else {
          document.getElementById("hiddenCodeTextarea").style.display = "none";
          document.getElementById("templateMainDiv").style.display = "flex";
-      } else {
-         page2BottomLeftDivLeftDiv.className = "";
-         tooltipCheck(!0);
+         page2BottomLeftDivLeftDiv.className = "expand";
+         tooltipCheck(!1);
          rotateDIV(document.getElementById("templateSelectionButton").children[0]);
       }
-   } else {
-      document.getElementById("hiddenCodeTextarea").style.display = "none";
-      document.getElementById("templateMainDiv").style.display = "flex";
-      page2BottomLeftDivLeftDiv.className = "expand";
-      tooltipCheck(!1);
-      rotateDIV(document.getElementById("templateSelectionButton").children[0]);
    }
 }
 
@@ -977,7 +995,7 @@ function loadCardPreset() {
    let forwardBtn = document.createElement("button");
    forwardBtn.className = "btn btn-info";
    forwardBtn.id = "cardNextButton";
-   forwardBtn.setAttribute("onclick", "ofDblClicked2()");
+   forwardBtn.setAttribute("onclick", "ifDblClicked2()");
    forwardBtn.appendChild(document.createTextNode("View Next Slide"));
 
    let totalCardChild = $(".cardAnimationDiv").children().length;
@@ -1563,24 +1581,42 @@ function addNewNumberList(labelText) {
 
 // Hidden HTML
 function toggleHiddenCodes() {
-   let page2BottomLeftDivLeftDiv = document.getElementById("page2BottomLeftDivLeftDiv");
-   if ($(page2BottomLeftDivLeftDiv).hasClass("expand")) {
-      if (document.getElementById("hiddenCodeTextarea").style.display === "none") {
+   if (!isAnimating) {
+      let page2BottomLeftDivLeftDiv = document.getElementById("page2BottomLeftDivLeftDiv");
+      if ($(page2BottomLeftDivLeftDiv).hasClass("expand")) {
+         if (document.getElementById("hiddenCodeTextarea").style.display === "none") {
+            document.getElementById("templateMainDiv").style.display = "none";
+            document.getElementById("hiddenCodeTextarea").style.display = "flex";
+         } else {
+            isAnimating = !0;
+            page2BottomLeftDivLeftDiv.className = "";
+            tooltipCheck(!0);
+            rotateDIV(document.getElementById("templateSelectionButton").children[0]);
+            setTimeout(function() {
+               isAnimating = !0;
+               $("#hiddenCodesButton > :first-child").effect("shake", {distance: 5, times: 5});
+            }, 1000);
+            setTimeout(function() {
+               isAnimating = !1;
+            }, 1500);
+         }
+      } else {
+         isAnimating = !0;
          document.getElementById("templateMainDiv").style.display = "none";
          document.getElementById("hiddenCodeTextarea").style.display = "flex";
-      } else {
-         page2BottomLeftDivLeftDiv.className = "";
-         tooltipCheck(!0);
+         page2BottomLeftDivLeftDiv.className = "expand";
+         tooltipCheck(!1);
          rotateDIV(document.getElementById("templateSelectionButton").children[0]);
+         setTimeout(function() {
+            isAnimating = !0;
+            $("#hiddenCodesButton > :first-child").effect("shake", {distance: 5, times: 5});
+         }, 1000);
+         setTimeout(function() {
+            isAnimating = !1;
+         }, 1500);
       }
-   } else {
-      document.getElementById("templateMainDiv").style.display = "none";
-      document.getElementById("hiddenCodeTextarea").style.display = "flex";
-      page2BottomLeftDivLeftDiv.className = "expand";
-      tooltipCheck(!1);
-      rotateDIV(document.getElementById("templateSelectionButton").children[0]);
+      setHiddenHTML();
    }
-   setHiddenHTML();
 }
 
 function updateComponentsDiv() {
@@ -2010,7 +2046,7 @@ function ifDblClicked(clickedParent) {
 
 }
 
-function ofDblClicked2() {
+function ifDblClicked2() {
    let cardSwipeDivDivChildren = $(".cardSwipeDivDiv > .cardSwipeDiv");
    // Loop (-1 to prevent last)
    for (i = 0; i < cardSwipeDivDivChildren.length - 1; i++) {
@@ -2044,6 +2080,20 @@ function ofDblClicked2() {
 // Number list function
 function getNumberListIndex() {
    numberListIndex = document.getElementsByClassName("fancyNumbers").length + 1;
+}
+
+// Function to convert rgb color to hex format
+function rgb2hex(rgb) {
+   rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+   if (!rgb) {
+      return "#000000";
+   } else {
+      return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+   }
+}
+
+function hex(x) {
+   return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
 }
 
 // Checklist functions
