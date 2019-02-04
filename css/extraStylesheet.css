@@ -149,6 +149,10 @@ p {
    flex-grow: 1;
 }
 
+#page1BottomTabDetails > img {
+   max-width: 100%;
+}
+
 #page1BottomAccordionTitle, #page1BottomCardTitle, #page1BottomWhyTitle {
    padding: 10px;
 }
@@ -162,8 +166,9 @@ p {
 #page1TopDivTitle, #page1TopDivButtonDiv, #page1BottomDivTitle,
 #page1BottomDivSubtitle, #page1BottomAccordionTitle, #page1BottomAccordionDetails,
 #page1BottomAccordionExample, #page1BottomCardTitle, #page1BottomCardDetails,
-#page1BottomCardDetailsExample, #page1BottomDivWhyTitle, #page1BottomWhyTitle,
-#page1BottomWhyDetails {
+#page1BottomChecklistTitle, #page1BottomChecklistDetails, #page1BottomTabTitle,
+#page1BottomTabDetails, #page1BottomListTitle, #page1BottomListDetails,
+#page1BottomDivWhyTitle, #page1BottomWhyTitle, #page1BottomWhyDetails {
    opacity: 0;
 }
 
@@ -538,6 +543,10 @@ p {
    border-color: transparent transparent black transparent;
 }
 
+.tooltipBottom {
+   display: flex;
+}
+
 .tooltipBottom > button {
    float: right;
 }
@@ -547,7 +556,6 @@ p {
    bottom: -2.50em;
    position: relative;
    font-size: 75%;
-   line-height: 0;
    vertical-align: baseline;
 }
 
@@ -1127,7 +1135,7 @@ p {
       font-size: 40px;
    }
 
-   #page1BottomAccordionDetails, #page1BottomCardDetails, #page1BottomWhyDetails {
+   #page1BottomAccordionDetails, #page1BottomCardDetails, #page1BottomChecklistDetails, #page1BottomTabDetails, #page1BottomListDetails, #page1BottomWhyDetails {
       text-align: left;
    }
 

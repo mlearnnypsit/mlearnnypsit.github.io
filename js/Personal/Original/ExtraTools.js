@@ -6,10 +6,14 @@ let elementsArray = [
    "page1BottomDivSubtitle",
    "page1BottomAccordionTitle",
    "page1BottomAccordionDetails",
-   "page1BottomAccordionDetailsExample",
    "page1BottomCardTitle",
    "page1BottomCardDetails",
-   "page1BottomCardDetailsExample",
+   "page1BottomChecklistTitle",
+   "page1BottomChecklistDetails",
+   "page1BottomTabTitle",
+   "page1BottomTabDetails",
+   "page1BottomListTitle",
+   "page1BottomListDetails",
    "page1BottomDivWhyTitle",
    "page1BottomWhyTitle",
    "page1BottomWhyDetails"
@@ -172,16 +176,18 @@ function rotateDIV(boxIcon) {
 function checkElement() {
    for (i = 0; i < elementsArray.length; i++) {
       let element = document.getElementById(elementsArray[i]);
-      if ($(element).css("opacity") == 1) {
-         continue;
-      }
-      if ($(window).width() < 425) {
-         if (window.pageYOffset >= ($(element).position().top - $(window).height() * 0.9)) {
-            animateElement(element);
+      if(element){
+         if ($(element).css("opacity") == 1) {
+            continue;
          }
-      } else {
-         if (window.pageYOffset >= ($(element).position().top - $(window).height() * 0.7)) {
-            animateElement(element);
+         if ($(window).width() < 425) {
+            if (window.pageYOffset >= ($(element).position().top - $(window).height() * 0.9)) {
+               animateElement(element);
+            }
+         } else {
+            if (window.pageYOffset >= ($(element).position().top - $(window).height() * 0.7)) {
+               animateElement(element);
+            }
          }
       }
    }
@@ -220,7 +226,7 @@ function addTooltip(textContent, btnText, destinationID, b) {
       tooltipBottomBtn.style.width = "100%";
    } else {
       tooltipBottomBtn.className = "btn btn-light";
-      tooltipBottomBtn.appendChild(document.createTextNode("Skip"));
+      tooltipBottomBtn.appendChild(document.createTextNode("Skip Tutorial"));
       let tooltipBottomText = document.createElement("p");
       tooltipBottomText.appendChild(document.createTextNode("Waiting for input..."));
       tooltipBottom.appendChild(tooltipBottomText);
