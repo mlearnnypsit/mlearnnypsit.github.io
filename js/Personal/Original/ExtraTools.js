@@ -2106,7 +2106,7 @@ function hex(x) {
 let checklistStartup = "document.querySelectorAll('.checkboxContainer input').forEach(function(a){'true'===localStorage.getItem(a.id)&&(a.checked=!0)})";
 
 // Tabs functions
-let tabsOnClick = "for(var elementIndex=Array.prototype.indexOf.call(this.parentNode.children,this),a=this.parentElement.nextElementSibling.children,b=0;b<a.length;b++)a[b].className=b===elementIndex?'tabComponentContent tabActiveContent':'tabComponentContent';for(var a$0=this.parentElement.children,b$1=0;b$1<a$0.length;b$1++)a$0[b$1].className='tabComponentLinks';this.className='tabComponentLinks'===this.className?'tabComponentLinks tabComponentActive':'tabComponentLinks'";
+let tabsOnClick = "let elementIndex=Array.prototype.indexOf.call(this.parentNode.children,this);for(a=this.parentElement.nextElementSibling.children,b=0;b<a.length;b++)a[b].className=(b===elementIndex)?'tabComponentContent tabActiveContent':'tabComponentContent';for(a=this.parentElement.children,b=0;b<a.length;b++)a[b].className='tabComponentLinks';this.className=(this.className ==='tabComponentLinks')?'tabComponentLinks tabComponentActive':'tabComponentLinks';";
 
 // Messy stuff
 // CardStartup script
