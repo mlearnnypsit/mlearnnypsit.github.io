@@ -2191,7 +2191,8 @@ function setActualColour(dropdownInput) {
 
 function generateHTML() {
    $("#popupDiv").modal("show");
-   $("#popup .modal-body textarea").val($("#page2").html().trim());
+   let popupOutputHTML = "<p><link rel='stylesheet' href='https://mlearnnypsit.github.io/css/Blackboard.min.css' /></p><meta name='viewport' content='width=device-width, initial-scale=1.0' />" + $("#page2").html().trim();
+   $("#popup .modal-body textarea").val(popupOutputHTML);
 }
 
 function closePopup() {

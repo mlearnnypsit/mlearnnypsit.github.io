@@ -1660,7 +1660,7 @@ function setHiddenHTML() {
 function page2Output() {
    if ($("#componentsDiv").html()) {
       removeHelp();
-      $("#page2OutputTextarea").val("");
+      $("#page2OutputTextarea").val("<p><link rel='stylesheet' href='https://mlearnnypsit.github.io/css/Blackboard.min.css' /></p><meta name='viewport' content='width=device-width, initial-scale=1.0' />");
       $("#tempDiv").empty();
       let componentsDiv = $("#componentsDiv").clone();
       switch (isAccordion) {
@@ -1743,7 +1743,7 @@ function page2Output() {
             cardFlipBack.removeAttribute("contenteditable");
             cardFlipBack.removeAttribute("style");
          });
-         $("#page2OutputTextarea")[0].value = componentsDiv.html();
+         $("#page2OutputTextarea")[0].value += componentsDiv.html();
          break;
       case 5: // Checklist
          let checkBoxTitle = componentsDiv.find(".checkBoxPageDiv > :first-child")[0];
@@ -1757,7 +1757,7 @@ function page2Output() {
             // Remove contentEditable
             checkboxLabel.removeAttribute("contenteditable");
          });
-         $("#page2OutputTextarea")[0].value = componentsDiv.html();
+         $("#page2OutputTextarea")[0].value += componentsDiv.html();
          $("#page2OutputTextarea")[0].value += "<script>" + checklistStartup + "</script>";
          break;
       case 6: // Tabs
@@ -1788,7 +1788,7 @@ function page2Output() {
             // Remove contentEditable
             tabComponentContent.removeAttribute("contenteditable");
          });
-         $("#page2OutputTextarea")[0].value = componentsDiv.html();
+         $("#page2OutputTextarea")[0].value += componentsDiv.html();
          break;
       case 7: // Lists
          componentsDiv.find(".fancyNumbers").each(function () {
@@ -1803,7 +1803,7 @@ function page2Output() {
          componentsDiv.find("[type='color']").each(function () {
             $(this).remove();
          })
-         $("#page2OutputTextarea")[0].value = componentsDiv.html();
+         $("#page2OutputTextarea")[0].value += componentsDiv.html();
          break;
       }
 
