@@ -148,7 +148,7 @@ $(function () {
 
    $(document).on("click", "#templateSelectionButton", function () {
       showTemplates();
-   })
+   });
 
    // Rotate first
    rotateDIV(document.getElementById("templateSelectionButton").children[0]);
@@ -395,40 +395,45 @@ function hideImportModal() {
 }
 
 function checkImportTextarea() {
-   let importedText = $("#importTextarea").val();
-   if (importedText) {
-      let tempDiv = $('<div>').append($(importedText).clone());
-      if (tempDiv.find(".accordion").html()) {
-         removeHelp();
-         loadImportedAccordion(tempDiv);
-         return !0;
-      } else if (tempDiv.find(".accordionAlternate").html()) {
-         removeHelp();
-         loadImportedAccordionAlt(tempDiv);
-         return !0;
-      } else if (tempDiv.find(".cardAnimationDiv").html()) {
-         removeHelp();
-         loadImportedCard(tempDiv);
-         return !0;
-      } else if (tempDiv.find(".cardFlipMasterDiv").html()) {
-         removeHelp();
-         loadImportedFlashCardPreset(tempDiv);
-         return !0;
-      } else if (tempDiv.find(".checkBoxPageDiv").html()) {
-         removeHelp();
-         loadImportedChecklistPreset(tempDiv);
-         return !0;
-      } else if (tempDiv.find(".tabComponent").html()) {
-         removeHelp();
-         loadImportedTabsPreset(tempDiv);
-         return !0;
-      } else if (tempDiv.find(".fancyNumbers").html()) {
-         removeHelp();
-         loadImportedNumberListPreset(tempDiv);
-         return !0;
+   try {
+      let importedText = $("#importTextarea").val();
+      if (importedText) {
+         let tempDiv = $('<div>').append($(importedText).clone());
+         if (tempDiv.find(".accordion").html()) {
+            removeHelp();
+            loadImportedAccordion(tempDiv);
+            return !0;
+         } else if (tempDiv.find(".accordionAlternate").html()) {
+            removeHelp();
+            loadImportedAccordionAlt(tempDiv);
+            return !0;
+         } else if (tempDiv.find(".cardAnimationDiv").html()) {
+            removeHelp();
+            loadImportedCard(tempDiv);
+            return !0;
+         } else if (tempDiv.find(".cardFlipMasterDiv").html()) {
+            removeHelp();
+            loadImportedFlashCardPreset(tempDiv);
+            return !0;
+         } else if (tempDiv.find(".checkBoxPageDiv").html()) {
+            removeHelp();
+            loadImportedChecklistPreset(tempDiv);
+            return !0;
+         } else if (tempDiv.find(".tabComponent").html()) {
+            removeHelp();
+            loadImportedTabsPreset(tempDiv);
+            return !0;
+         } else if (tempDiv.find(".fancyNumbers").html()) {
+            removeHelp();
+            loadImportedNumberListPreset(tempDiv);
+            return !0;
+         }
       }
+      alert("Code does not match. Make sure you copied correctly");
+   } catch(err) {
+      alert("Code does not match. Make sure you copied correctly");
+      console.log(err.message);
    }
-   alert("Code does not match. Make sure you copied correctly");
 }
 
 function loadImportedAccordion(tempDiv) {
